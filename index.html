@@ -62,7 +62,7 @@
     position:absolute; inset:0; z-index:60; display:flex;align-items:center;justify-content:center;
     background:linear-gradient(180deg, rgba(3,7,18,0.5), rgba(3,7,18,0.4));
     backdrop-filter: blur(2px);
-    visibility:hidden; opacity:0; transition:all .24s ease;
+    visibility:hidden; opacity:0; transition:all .04s ease;
   }
   .loader.show{visibility:visible;opacity:1}
   .spinner{
@@ -133,10 +133,10 @@
   </div>
 
   <div class="bottombar">
-    <button class="btn" id="btn-recenter">Recenter View</button>
-    <button class="btn" id="btn-debug">Toggle Debug</button>
+    <button class="btn" id="btn-recenter">Go To Clinic</button>
+    <!-- <button class="btn" id="btn-debug">Toggle Debug</button>
     <button class="btn" id="btn-edit-mode">Edit Hotspots</button>
-    <button class="btn" id="btn-toggle-signs">Toggle Signs</button>
+    <button class="btn" id="btn-toggle-signs">Toggle Signs</button> -->
     <div class="status" id="status">Ready</div>
   </div>
 
@@ -194,11 +194,16 @@
     <!-- Assets -->
     <a-assets>
       <!-- <img id="lobby-img" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/city.jpg" crossorigin="anonymous"> -->
-      <img id="lobby-img" src="https://newqar.github.io/360HospitalUiTM/lobby.jpg" crossorigin="anonymous">
+      <img id="lobby-img" src="test1.jpg" crossorigin="anonymous">
       <!-- <img id="hall1-img" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/cubes.jpg" crossorigin="anonymous"> -->
-       <img id="hall1-img" src="https://newqar.github.io/360HospitalUiTM/bathroom.jpg" crossorigin="anonymous">
-      <img id="pharmacy-img" src="https://newqar.github.io/360HospitalUiTM/pharmacy.png" crossorigin="anonymous">
-      <img id="ward-img" src="https://newqar.github.io/360HospitalUiTM/wardentrance.jpg" crossorigin="anonymous">
+       <img id="Recep-img" src="test2.jpg" crossorigin="anonymous">
+      <img id="Bayaran-img" src="test3.jpg" crossorigin="anonymous">
+      <img id="hall1-img" src="test4.jpg" crossorigin="anonymous">
+      <img id="hall2-img" src="test5.jpg" crossorigin="anonymous">
+      <img id="hall3-img" src="test6.jpg" crossorigin="anonymous">
+      <img id="hall4-img" src="test7.jpg" crossorigin="anonymous">
+      <img id="hall5-img" src="test8.jpg" crossorigin="anonymous">
+      <img id="Clinic-img" src="test9.jpg" crossorigin="anonymous">
     </a-assets>
 
     <a-entity id="cameraRig" position="0 1.6 0">
@@ -212,7 +217,7 @@
       </a-entity>
     </a-entity>
 
-    <a-sky id="sky" radius="5000" src="#lobby-img" rotation="0 -90 0"></a-sky>
+    <a-sky id="sky" radius="5000" src="#lobby-img" rotation="0 5 0"></a-sky>
 
     <a-entity id="hotspots"></a-entity>
     <a-entity id="signs"></a-entity>
@@ -236,41 +241,103 @@
       title: "Main Lobby",
       type: "image",
       src: "#lobby-img",
-      mapPos: {x: 30, y: 50},
+      mapPos: {x: 30, y: 80},
       neighbors: [
-        {id: "hall1", yaw: -20, pitch: 0, use3DSign: true, useHotspot: true},
-        {id: "pharmacy", yaw: 60, pitch: 0, use3DSign: true, useHotspot: false}
+        {id: "Receptionist", yaw: 110, pitch: 10, jauh:5.5, use3DSign: true, useHotspot: false},
+        {id: "Kaunter Bayaran", yaw: 60, pitch: 12, jauh: 6, use3DSign: true, useHotspot: false},
+        {id: "hall1", yaw: 0, pitch: 15, jauh:6, use3DSign: false, useHotspot: true}
+      ]
+    },
+    "Receptionist": {
+      id: "Receptionist",
+      title: "Receptionist",
+      type: "image",
+      src: "#Recep-img",
+      mapPos: {x: 80, y: 80},
+      neighbors: [
+        {id: "lobby", yaw: -1, pitch: 0, jauh:5.3, use3DSign: true, useHotspot: false},
+        {id: "Kaunter Bayaran", yaw: 130, pitch: 10, jauh:5.5,use3DSign: true, useHotspot: false}
+      ]
+    },
+    "Kaunter Bayaran": {
+      id: "Kaunter Bayaran",
+      title: "Kaunter Bayaran",
+      type: "image",
+      src: "#Bayaran-img",
+      mapPos: {x: 150, y: 60},
+      neighbors: [
+        {id: "Receptionist", yaw: 108, pitch: 10, jauh:5.5, use3DSign: true, useHotspot: false},
+        {id: "lobby", yaw: 155, pitch: 12.5, jauh:5.5, use3DSign: true, useHotspot: false}
       ]
     },
     "hall1": {
       id: "hall1",
-      title: "Bathroom",
+      title: "Hall 1",
       type: "image",
       src: "#hall1-img",
-      mapPos: {x: 80, y: 50},
-      neighbors: [
-        {id: "lobby", yaw: 160, pitch: 0, use3DSign: true, useHotspot: true},
-        {id: "ward", yaw: -40, pitch: 0, use3DSign: true, useHotspot: true}
-      ]
-    },
-    "pharmacy": {
-      id: "pharmacy",
-      title: "Pharmacy",
-      type: "image",
-      src: "#pharmacy-img",
-      mapPos: {x: 150, y: 50},
-      neighbors: [
-        {id: "lobby", yaw: -140, pitch: 0, use3DSign: true, useHotspot: true}
-      ]
-    },
-    "ward": {
-      id: "ward",
-      title: "Ward Entrance",
-      type: "image",
-      src: "#ward-img",
       mapPos: {x: 120, y: 20},
       neighbors: [
-        {id: "hall1", yaw: 140, pitch: 0, use3DSign: true, useHotspot: true}
+        {id: "lobby", yaw: 173, pitch: 15, jauh:5.5, use3DSign: false, useHotspot: true},
+        {id: "hall2", yaw: -5, pitch:15, jauh:5.5, use3DSign: false, useHotspot: true}
+      ]
+    },
+
+        "hall2": {
+      id: "hall2",
+      title: "hall2",
+      type: "image",
+      src: "#hall2-img",
+      mapPos: {x: 150, y: 20},
+      neighbors: [
+        {id: "hall1", yaw: 180, pitch: 15, jauh:5.5, use3DSign: false, useHotspot: true},
+        {id: "hall3", yaw: 20, pitch:15, jauh:5.5, use3DSign: false, useHotspot: true}
+      ]
+    },
+
+        "hall3": {
+      id: "hall3",
+      title: "hall3",
+      type: "image",
+      src: "#hall3-img",
+      mapPos: {x: 90, y: 20},
+      neighbors: [
+        {id: "hall2", yaw: 125, pitch: 10, jauh:4.5, use3DSign: false, useHotspot: true},
+        {id: "hall4", yaw: 1, pitch:18, jauh:5.5, use3DSign: false, useHotspot: true}
+      ]
+    },
+
+        "hall4": {
+      id: "hall4",
+      title: "hall4",
+      type: "image",
+      src: "#hall4-img",
+      mapPos: {x: 60, y: 20},
+      neighbors: [
+        {id: "hall3", yaw: 170, pitch: 15, jauh:5.5, use3DSign: false, useHotspot: true},
+        {id: "hall5", yaw: -10, pitch:15, jauh:5.5, use3DSign: false, useHotspot: true}
+      ]
+    },
+
+      "hall5": {
+      id: "hall5",
+      title: "hall5",
+      type: "image",
+      src: "#hall5-img",
+      mapPos: {x: 60, y: 20},
+      neighbors: [
+        {id: "hall4", yaw: 181, pitch: 10, jauh:4.5, use3DSign: false, useHotspot: true},
+        {id: "Clinic", yaw:1, pitch:12, jauh:5, use3DSign: false, useHotspot: true}
+      ]
+    },
+
+      "Clinic": {
+      id: "Clinic",
+      title: "Clinic",
+      type: "image",
+      src: "#Clinic-img",
+      mapPos: {x: 60, y: 20},
+      neighbors: [
+        {id: "hall5", yaw: -130, pitch:15, jauh:5.5, use3DSign: false, useHotspot: true}
       ]
     }
   };
@@ -283,6 +350,7 @@
   let showSigns = true;
   let lastClickedYaw = 0;
   let lastClickedPitch = 0;
+  let journeyInProgress = false;
 
   function sphericalToCartesian(yawDeg, pitchDeg, radius) {
     radius = radius || 3;
@@ -296,7 +364,7 @@
 
   // Create 3D directional sign with arrow
   function create3DSign(neighbor, targetNode) {
-    const pos = sphericalToCartesian(neighbor.yaw || 0, (neighbor.pitch || 0) + 5, 2.2);
+    const pos = sphericalToCartesian(neighbor.yaw || 0, (neighbor.pitch || 0), neighbor.jauh);
     
     // Container for the sign
     const signGroup = document.createElement('a-entity');
@@ -405,7 +473,7 @@
       
       // Create hotspot ring if enabled
       if(n.useHotspot !== false) {
-        const pos = sphericalToCartesian(n.yaw || 0, n.pitch || 0, 2.7);
+        const pos = sphericalToCartesian(n.yaw || 0, n.pitch || 0, n.jauh);
         const ent = document.createElement('a-entity');
         ent.setAttribute('geometry','primitive: ring; radiusInner: 0.12; radiusOuter: 0.18');
         ent.setAttribute('material','color: #ffd166; shader: flat; opacity: 0.92');
@@ -478,16 +546,52 @@
         showLoader(false);
         isTransitioning = false;
       }
-    }, 300);
+    });
   }
 
-  function recenterView(){
-    const camera = document.querySelector('#camera');
-    if(camera){
-      camera.setAttribute('rotation','0 0 0');
-    }
-    console.log('View recentered');
+// Auto-journey from Lobby -> Hall1 -> Hall2 -> Hall3 -> Hall4 -> Hall5 -> Hall6 (Clinic)
+// Auto-journey from Lobby -> Hall1 -> Hall2 -> Hall3 -> Hall4 -> Hall5 -> Hall6 (Clinic)
+function ToClinic() {
+  // Prevent double-trigger if user spams the button
+  if (journeyInProgress) {
+    statusEl.textContent = "Journey already in progress…";
+    return;
   }
+  journeyInProgress = true;
+
+  const path = ["lobby", "hall1", "hall2", "hall3", "hall4", "hall5", "Clinic"];
+  const dwellTime = 1400; // ms per location (includes 300ms loader inside goToNode)
+  let index = 0;
+
+  function step() {
+    const nodeId = path[index];
+
+    // On first step, if already at lobby, don’t reload, just start the journey
+    if (index === 0 && currentNodeId === nodeId) {
+      statusEl.textContent = "Starting journey to Clinic";
+    } else {
+      goToNode(nodeId); // uses existing transition+loader logic
+    }
+
+    // Update status text for flavor
+    if (index < path.length - 1) {
+      statusEl.textContent = "Passing: " + nodes[nodeId].title;
+    } else {
+      statusEl.textContent = "Arrived at Clinic (Hall 6)";
+      journeyInProgress = false; // journey done
+      return; // stop recursion
+    }
+
+    index++;
+    // Schedule next hop
+    setTimeout(step, dwellTime);
+  }
+
+  // Kick off the first step
+  step();
+}
+
+
 
   function toggleDebug(){
     debugMode = !debugMode;
@@ -724,13 +828,13 @@
     console.log('Mini map built');
     
     // Bind UI buttons
-    document.getElementById('btn-recenter').addEventListener('click', recenterView);
-    document.getElementById('btn-debug').addEventListener('click', toggleDebug);
-    document.getElementById('btn-edit-mode').addEventListener('click', toggleEditMode);
-    document.getElementById('btn-close-edit').addEventListener('click', toggleEditMode);
-    document.getElementById('btn-add-hotspot').addEventListener('click', addHotspot);
-    document.getElementById('btn-export').addEventListener('click', exportConfig);
-    document.getElementById('btn-toggle-signs').addEventListener('click', toggleSigns);
+    document.getElementById('btn-recenter').addEventListener('click', ToClinic);
+    // document.getElementById('btn-debug').addEventListener('click', toggleDebug);
+    // document.getElementById('btn-edit-mode').addEventListener('click', toggleEditMode);
+    // document.getElementById('btn-close-edit').addEventListener('click', toggleEditMode);
+    // document.getElementById('btn-add-hotspot').addEventListener('click', addHotspot);
+    // document.getElementById('btn-export').addEventListener('click', exportConfig);
+    // document.getElementById('btn-toggle-signs').addEventListener('click', toggleSigns);
     
     document.getElementById('targetSelect').addEventListener('change', function(e) {
       const addBtn = document.getElementById('btn-add-hotspot');
