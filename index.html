@@ -457,7 +457,10 @@
     </a-assets>
 
     <a-entity id="cameraRig" position="0 1.6 0">
-      <a-entity id="camera" camera look-controls wasd-controls>
+      <a-entity id="camera"
+          camera
+          look-controls="touchEnabled: true; mouseEnabled: true"
+          wasd-controls="enabled: false">
         <a-entity id="cursor" cursor="fuse: false; rayOrigin: mouse"
                   raycaster="objects: .hotspot, .sign-clickable"
                   position="0 0 -1"
@@ -1544,7 +1547,10 @@ AFRAME.registerComponent('dashed-line', {
     
     const startApp = function() {
       console.log('Scene loaded in background!');
-      
+      const cam = document.querySelector('#camera');
+if (cam && cam.components['look-controls']) {
+  cam.components['look-controls'].magicWindowControlsEnabled = false; // disables gyro on mobile
+}
       // Re-query scene elements after A-Frame loads
       sky = document.querySelector('#sky');
       hotspotsContainer = document.querySelector('#hotspots');
