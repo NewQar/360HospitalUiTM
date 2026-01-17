@@ -37,6 +37,28 @@
     width:220px; background:var(--ui); padding:12px;border-radius:10px;
     box-shadow:0 6px 18px rgba(2,6,23,0.6);
     color:var(--text);
+    transition: all 0.3s ease;
+  }
+  .map-panel.collapsed {
+    width: auto;
+    padding: 8px 12px;
+  }
+  .map-panel.collapsed .map-content {
+    display: none;
+  }
+  .map-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+  }
+  .map-toggle-icon {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+  }
+  .map-panel.collapsed .map-toggle-icon {
+    transform: rotate(180deg);
   }
   .map-title{font-size:13px;margin:0 0 8px 0}
   .mini-map{width:100%;height:140px;border-radius:6px; background:#0b1220;display:flex;align-items:center;justify-content:center;position:relative}
@@ -110,6 +132,150 @@
     display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;
   }
   .checkbox-label input{cursor:pointer}
+
+  /* Route Selector Modal */
+  .route-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(3, 7, 18, 0.92);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  .route-modal.show {
+    visibility: visible;
+    opacity: 1;
+  }
+  .route-modal-content {
+    background: var(--ui);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(2, 6, 23, 0.8);
+    max-width: 600px;
+    width: 90%;
+  }
+  .route-modal h2 {
+    margin: 0 0 8px 0;
+    font-size: 22px;
+    color: var(--text);
+  }
+  .route-modal p {
+    margin: 0 0 24px 0;
+    font-size: 13px;
+    opacity: 0.85;
+    color: #94a3b8;
+  }
+  .route-modal-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .route-modal-left {
+    display: flex;
+    flex-direction: column;
+  }
+  .route-modal-right {
+    display: flex;
+    flex-direction: column;
+  }
+  .route-modal-map {
+    background: #0b1220;
+    border-radius: 8px;
+    padding: 12px;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .route-modal-map svg {
+    width: 100%;
+    height: 100%;
+  }
+  @media (max-width: 768px) {
+    .route-modal-body {
+      grid-template-columns: 1fr;
+    }
+    .route-modal-map {
+      height: 200px;
+    }
+  }
+  .route-select-group {
+    margin-bottom: 18px;
+  }
+  .route-select-group label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 8px;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .route-select {
+    width: 100%;
+    padding: 12px;
+    background: rgba(248, 248, 248, 0.76);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #0b1220;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .route-select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .route-modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .btn-modal {
+    flex: 1;
+    padding: 12px;
+    border: 0;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .btn-modal.primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-modal.primary:hover {
+    background: #0960c7;
+  }
+  .btn-modal.primary:disabled {
+    background: #374151;
+    color: #6b7280;
+    cursor: not-allowed;
+  }
+  .btn-modal.secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+  }
+  .btn-modal.secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+  .route-info {
+    margin-top: 16px;
+    padding: 12px;
+    background: rgba(11, 116, 222, 0.1);
+    border: 1px solid rgba(11, 116, 222, 0.3);
+    border-radius: 8px;
+    font-size: 12px;
+    color: #93c5fd;
+    display: none;
+  }
+  .route-info.show {
+    display: block;
+  }
 </style>
 </head>
 <body>
@@ -120,23 +286,26 @@
     <p id="locationLabel">Loading initial scene…</p>
   </div>
 
-  <div class="map-panel">
-    <div class="map-title">Floor map (prototype)</div>
-    <div class="mini-map" id="miniMap">
-      <svg class="map-svg" viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
-        <rect x="0" y="0" width="200" height="100" rx="6" ry="6" fill="#0e1b2a"/>
-        <g id="nodesSvg"></g>
-        <path d="M20 50 L180 50" stroke="#243b57" stroke-width="6" stroke-linecap="round" />
-      </svg>
+  <div class="map-panel" id="mapPanel">
+    <div class="map-toggle" id="mapToggle">
+      <div class="map-title">Floor map</div>
+      <span class="map-toggle-icon">▼</span>
     </div>
-    <div class="map-legend"><strong>Legend:</strong> ● Current · Click signs/hotspots to move</div>
+    <div class="map-content">
+      <div class="mini-map" id="miniMap">
+        <svg class="map-svg" viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
+          <rect x="0" y="0" width="200" height="100" rx="6" ry="6" fill="#0e1b2a"/>
+          <g id="nodesSvg"></g>
+          <path d="M20 50 L180 50" stroke="#243b57" stroke-width="6" stroke-linecap="round" />
+        </svg>
+      </div>
+      <div class="map-legend"><strong>Legend:</strong> ● Current · Click signs/hotspots to move</div>
+    </div>
   </div>
 
   <div class="bottombar">
+    <button class="btn" id="btn-plan-route">📍 Plan Route</button>
     <button class="btn" id="btn-recenter">Go To Clinic</button>
-    <!-- <button class="btn" id="btn-debug">Toggle Debug</button>
-    <button class="btn" id="btn-edit-mode">Edit Hotspots</button>
-    <button class="btn" id="btn-toggle-signs">Toggle Signs</button> -->
     <div class="status" id="status">Ready</div>
   </div>
 
@@ -181,6 +350,58 @@
     </div>
   </div>
 
+  <!-- Route Selector Modal -->
+  <div class="route-modal" id="routeModal">
+    <div class="route-modal-content">
+      <h2>🏥 Navigate UiTM Hospital</h2>
+      <p>Select your starting point and destination to begin your journey</p>
+      
+      <div class="route-modal-body">
+        <div class="route-modal-left">
+          <div class="route-select-group">
+            <label for="startLocation">Starting Point:</label>
+            <select id="startLocation" class="route-select">
+              <option value="">-- Choose where you are now --</option>
+            </select>
+          </div>
+          
+          <div class="route-select-group">
+            <label for="endLocation">Destination:</label>
+            <select id="endLocation" class="route-select">
+              <option value="">-- Choose where you want to go --</option>
+            </select>
+          </div>
+          
+          <div class="route-info" id="routeInfo">
+            <strong>📍 Route:</strong> <span id="routePath"></span>
+          </div>
+        </div>
+        
+        <div class="route-modal-right">
+          <div style="font-size: 12px; margin-bottom: 8px; color: #94a3b8;">Route Preview:</div>
+          <div class="route-modal-map">
+            <svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
+              <rect x="0" y="0" width="200" height="100" rx="6" ry="6" fill="#0e1b2a"/>
+              <g id="routeMapLines"></g>
+              <g id="routeMapNodes"></g>
+            </svg>
+          </div>
+          <div style="font-size: 11px; color: #64748b;">
+            <strong>Legend:</strong> 
+            <span style="color: #10b981;">●</span> Start · 
+            <span style="color: #0b74de;">●</span> End · 
+            <span style="color: #fbbf24;">━</span> Route
+          </div>
+        </div>
+      </div>
+      
+      <div class="route-modal-actions">
+        <button class="btn-modal secondary" id="btn-skip-route">Explore Freely</button>
+        <button class="btn-modal primary" id="btn-start-route" disabled>Start Navigation</button>
+      </div>
+    </div>
+  </div>
+
   <div class="note">Tip: Use mouse to look around. Click 3D signs or hotspots to navigate.</div>
 
   <div class="loader" id="loader">
@@ -193,10 +414,8 @@
   <a-scene embedded vr-mode-ui="enabled: false" renderer="antialias: true; colorManagement: true">
     <!-- Assets -->
     <a-assets>
-      <!-- <img id="lobby-img" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/city.jpg" crossorigin="anonymous"> -->
       <img id="lobby-img" src="test1.jpg" crossorigin="anonymous">
-      <!-- <img id="hall1-img" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/cubes.jpg" crossorigin="anonymous"> -->
-       <img id="Recep-img" src="test2.jpg" crossorigin="anonymous">
+      <img id="Recep-img" src="test2.jpg" crossorigin="anonymous">
       <img id="Bayaran-img" src="test3.jpg" crossorigin="anonymous">
       <img id="hall1-img" src="test4.jpg" crossorigin="anonymous">
       <img id="hall2-img" src="test5.jpg" crossorigin="anonymous">
@@ -218,7 +437,7 @@
     </a-entity>
 
     <a-sky id="sky" radius="5000" src="#lobby-img" rotation="0 5 0"></a-sky>
-<a-entity id="pathlines"></a-entity>
+    <a-entity id="pathlines"></a-entity>
     <a-entity id="hotspots"></a-entity>
     <a-entity id="signs"></a-entity>
 
@@ -230,7 +449,7 @@
 
 <script>
 
-// NEW: dashed line component using Three.js LineDashedMaterial
+// Dashed line component using Three.js
 AFRAME.registerComponent('dashed-line', {
   schema: {
     start:   { type: 'vec3', default: { x: 0, y: -1.6, z: 0 } },
@@ -270,8 +489,8 @@ AFRAME.registerComponent('dashed-line', {
       color: new THREE.Color(d.color),
       transparent: true,
       opacity: d.opacity,
-      side: THREE.DoubleSide,  // Render both sides
-      depthTest: true,         // Enable depth testing
+      side: THREE.DoubleSide,
+      depthTest: true,
       depthWrite: false
     });
 
@@ -283,7 +502,7 @@ AFRAME.registerComponent('dashed-line', {
       const b = start.clone().add(dir.clone().multiplyScalar(travelled + segLen));
 
       const mid = a.clone().add(b).multiplyScalar(0.5);
-      const cyl = new THREE.CylinderGeometry(d.radius, d.radius, segLen, 12, 1, false); // More segments, not open
+      const cyl = new THREE.CylinderGeometry(d.radius, d.radius, segLen, 12, 1, false);
 
       const mesh = new THREE.Mesh(cyl, material.clone());
       mesh.position.copy(mid);
@@ -291,7 +510,7 @@ AFRAME.registerComponent('dashed-line', {
       // rotate cylinder to align with direction
       mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
 
-      mesh.renderOrder = 1000; // Higher render order
+      mesh.renderOrder = 1000;
       this.group.add(mesh);
 
       travelled += (d.dashLen + d.gapLen);
@@ -308,8 +527,6 @@ AFRAME.registerComponent('dashed-line', {
   }
 });
 
-
-
 (function() {
   'use strict';
   
@@ -323,6 +540,7 @@ AFRAME.registerComponent('dashed-line', {
       type: "image",
       src: "#lobby-img",
       mapPos: {x: 30, y: 80},
+      isDestination: true,  // Show in destination picker
       neighbors: [
         {id: "Receptionist", yaw: 110, pitch: 10, jauh:5.5, use3DSign: true, useHotspot: false},
         {id: "Kaunter Bayaran", yaw: 60, pitch: 12, jauh: 6, use3DSign: true, useHotspot: false},
@@ -335,6 +553,7 @@ AFRAME.registerComponent('dashed-line', {
       type: "image",
       src: "#Recep-img",
       mapPos: {x: 80, y: 80},
+      isDestination: true,
       neighbors: [
         {id: "lobby", yaw: -1, pitch: 0, jauh:5.3, use3DSign: true, useHotspot: false},
         {id: "Kaunter Bayaran", yaw: 130, pitch: 10, jauh:5.5,use3DSign: true, useHotspot: false}
@@ -346,6 +565,7 @@ AFRAME.registerComponent('dashed-line', {
       type: "image",
       src: "#Bayaran-img",
       mapPos: {x: 150, y: 60},
+      isDestination: true,
       neighbors: [
         {id: "Receptionist", yaw: 108, pitch: 10, jauh:5.5, use3DSign: true, useHotspot: false},
         {id: "lobby", yaw: 155, pitch: 12.5, jauh:5.5, use3DSign: true, useHotspot: false}
@@ -357,73 +577,74 @@ AFRAME.registerComponent('dashed-line', {
       type: "image",
       src: "#hall1-img",
       mapPos: {x: 120, y: 20},
+      isDestination: false,  // Hallway - not a destination
       neighbors: [
         {id: "lobby", yaw: 173, pitch: 15, jauh:5.5, use3DSign: false, useHotspot: true},
         {id: "hall2", yaw: -5, pitch:15, jauh:5.5, use3DSign: false, useHotspot: true}
       ]
     },
-
-        "hall2": {
+    "hall2": {
       id: "hall2",
-      title: "hall2",
+      title: "Hall 2",
       type: "image",
       src: "#hall2-img",
       mapPos: {x: 150, y: 20},
+      isDestination: false,  // Hallway - not a destination
       neighbors: [
         {id: "hall1", yaw: 180, pitch: 15, jauh:5.5, use3DSign: false, useHotspot: true},
         {id: "hall3", yaw: 20, pitch:15, jauh:5.5, use3DSign: false, useHotspot: true}
       ]
     },
-
-        "hall3": {
+    "hall3": {
       id: "hall3",
-      title: "hall3",
+      title: "Hall 3",
       type: "image",
       src: "#hall3-img",
       mapPos: {x: 90, y: 20},
+      isDestination: false,  // Hallway - not a destination
       neighbors: [
         {id: "hall2", yaw: 125, pitch: 10, jauh:4.5, use3DSign: false, useHotspot: true},
         {id: "hall4", yaw: 1, pitch:18, jauh:5.5, use3DSign: false, useHotspot: true}
       ]
     },
-
-        "hall4": {
+    "hall4": {
       id: "hall4",
-      title: "hall4",
+      title: "Hall 4",
       type: "image",
       src: "#hall4-img",
       mapPos: {x: 60, y: 20},
+      isDestination: false,  // Hallway - not a destination
       neighbors: [
         {id: "hall3", yaw: 170, pitch: 15, jauh:5.5, use3DSign: false, useHotspot: true},
         {id: "hall5", yaw: -10, pitch:15, jauh:5.5, use3DSign: false, useHotspot: true}
       ]
     },
-
-      "hall5": {
+    "hall5": {
       id: "hall5",
-      title: "hall5",
+      title: "Hall 5",
       type: "image",
       src: "#hall5-img",
       mapPos: {x: 60, y: 20},
+      isDestination: false,  // Hallway - not a destination
       neighbors: [
         {id: "hall4", yaw: 181, pitch: 10, jauh:4.5, use3DSign: false, useHotspot: true},
         {id: "Clinic", yaw:1, pitch:12, jauh:5, use3DSign: false, useHotspot: true}
       ]
     },
-
-      "Clinic": {
+    "Clinic": {
       id: "Clinic",
       title: "Clinic",
       type: "image",
       src: "#Clinic-img",
       mapPos: {x: 60, y: 20},
+      isDestination: true,
       neighbors: [
         {id: "hall5", yaw: -130, pitch:15, jauh:5.5, use3DSign: false, useHotspot: true}
       ]
     }
   };
 
-let sky, hotspotsContainer, signsContainer, pathLinesContainer, loader, statusEl, locationLabel, miniMapGroup;
+  let sky, hotspotsContainer, signsContainer, pathLinesContainer, loader, statusEl, locationLabel, miniMapGroup;
   let currentNodeId = null;
   let isTransitioning = false;
   let debugMode = false;
@@ -432,6 +653,11 @@ let sky, hotspotsContainer, signsContainer, pathLinesContainer, loader, statusEl
   let lastClickedYaw = 0;
   let lastClickedPitch = 0;
   let journeyInProgress = false;
+  let plannedRoute = [];
+  let routeStartNode = null;
+  let routeEndNode = null;
+  let routeMapNodes = null;
+  let routeMapLines = null;
 
   function sphericalToCartesian(yawDeg, pitchDeg, radius) {
     radius = radius || 3;
@@ -444,65 +670,65 @@ let sky, hotspotsContainer, signsContainer, pathLinesContainer, loader, statusEl
   }
 
   // Create 3D directional sign with arrow
-function create3DSign(neighbor, targetNode) {
-  const pos = sphericalToCartesian(neighbor.yaw || 0, (neighbor.pitch || 0), neighbor.jauh);
-  
-  // Container for the sign
-  const signGroup = document.createElement('a-entity');
-  signGroup.setAttribute('position', pos.x + ' ' + pos.y + ' ' + pos.z);
-  signGroup.setAttribute('rotation', '0 ' + (-neighbor.yaw) + ' 0');
-  signGroup.setAttribute('class', 'sign-group');
-  signGroup.setAttribute('data-target', neighbor.id);
-  
-  // Sign board (panel background)
-  const board = document.createElement('a-entity');
-  board.setAttribute('geometry', 'primitive: box; width: 0.8; height: 0.3; depth: 0.05');
-  board.setAttribute('material', 'color: #0b74de; shader: flat; opacity: 0.95');
-  board.setAttribute('class', 'sign-clickable');
-  signGroup.appendChild(board);
-  
-  // Text label on sign
-  const text = document.createElement('a-entity');
-  text.setAttribute('text', 'value: ' + targetNode.title + '; align: center; width: 1.5; color: #ffffff');
-  text.setAttribute('position', '0 0.05 0.03');
-  signGroup.appendChild(text);
-  
-  // Arrow icon (using cone primitive)
-  const arrow = document.createElement('a-entity');
-  arrow.setAttribute('geometry', 'primitive: cone; radiusBottom: 0.08; radiusTop: 0; height: 0.18');
-  arrow.setAttribute('material', 'color: #ffd166; shader: flat');
-  arrow.setAttribute('position', '0 -0.08 0.03');
-  arrow.setAttribute('rotation', '0 0 180');
-  arrow.setAttribute('animation__bob', 'property: position; to: 0 -0.12 0.03; dir: alternate; dur: 1000; loop: true; easing: easeInOutSine');
-  signGroup.appendChild(arrow);
-  
-  // Pole/stand
-  const pole = document.createElement('a-entity');
-  pole.setAttribute('geometry', 'primitive: cylinder; radius: 0.02; height: 0.4');
-  pole.setAttribute('material', 'color: #1e293b; shader: flat');
-  pole.setAttribute('position', '0 -0.35 0');
-  signGroup.appendChild(pole);
-  
-  // NEW: Add dashed line from camera to sign
-  const lineEnt = document.createElement('a-entity');
-  lineEnt.setAttribute('dashed-line', {
-    start: { x: 0, y: -1.6, z: 0 },
-    end:   { x: pos.x, y: pos.y -0.6, z: pos.z },
-    color: '#ffd166',    // Blue to match sign color
-    dashLen: 0.15,
-    gapLen: 0.2,
-    radius: 0.05,
-    opacity: 0.5
-  });
-  pathLinesContainer.appendChild(lineEnt);
-  
-  // Make clickable
-  signGroup.addEventListener('click', function() {
-    if(!editMode) goToNode(neighbor.id);
-  });
-  
-  return signGroup;
-}
+  function create3DSign(neighbor, targetNode) {
+    const pos = sphericalToCartesian(neighbor.yaw || 0, (neighbor.pitch || 0), neighbor.jauh);
+    
+    // Container for the sign
+    const signGroup = document.createElement('a-entity');
+    signGroup.setAttribute('position', pos.x + ' ' + pos.y + ' ' + pos.z);
+    signGroup.setAttribute('rotation', '0 ' + (-neighbor.yaw) + ' 0');
+    signGroup.setAttribute('class', 'sign-group');
+    signGroup.setAttribute('data-target', neighbor.id);
+    
+    // Sign board (panel background)
+    const board = document.createElement('a-entity');
+    board.setAttribute('geometry', 'primitive: box; width: 0.8; height: 0.3; depth: 0.05');
+    board.setAttribute('material', 'color: #0b74de; shader: flat; opacity: 0.95');
+    board.setAttribute('class', 'sign-clickable');
+    signGroup.appendChild(board);
+    
+    // Text label on sign
+    const text = document.createElement('a-entity');
+    text.setAttribute('text', 'value: ' + targetNode.title + '; align: center; width: 1.5; color: #ffffff');
+    text.setAttribute('position', '0 0.05 0.03');
+    signGroup.appendChild(text);
+    
+    // Arrow icon (using cone primitive)
+    const arrow = document.createElement('a-entity');
+    arrow.setAttribute('geometry', 'primitive: cone; radiusBottom: 0.08; radiusTop: 0; height: 0.18');
+    arrow.setAttribute('material', 'color: #ffd166; shader: flat');
+    arrow.setAttribute('position', '0 -0.08 0.03');
+    arrow.setAttribute('rotation', '0 0 180');
+    arrow.setAttribute('animation__bob', 'property: position; to: 0 -0.12 0.03; dir: alternate; dur: 1000; loop: true; easing: easeInOutSine');
+    signGroup.appendChild(arrow);
+    
+    // Pole/stand
+    const pole = document.createElement('a-entity');
+    pole.setAttribute('geometry', 'primitive: cylinder; radius: 0.02; height: 0.4');
+    pole.setAttribute('material', 'color: #1e293b; shader: flat');
+    pole.setAttribute('position', '0 -0.35 0');
+    signGroup.appendChild(pole);
+    
+    // Add dashed line from camera to sign
+    const lineEnt = document.createElement('a-entity');
+    lineEnt.setAttribute('dashed-line', {
+      start: { x: 0, y: -1.6, z: 0 },
+      end:   { x: pos.x, y: pos.y -0.6, z: pos.z },
+      color: '#ffd166',
+      dashLen: 0.15,
+      gapLen: 0.2,
+      radius: 0.05,
+      opacity: 0.5
+    });
+    pathLinesContainer.appendChild(lineEnt);
+    
+    // Make clickable
+    signGroup.addEventListener('click', function() {
+      if(!editMode) goToNode(neighbor.id);
+    });
+    
+    return signGroup;
+  }
 
   function buildMiniMap() {
     console.log('Building mini map...');
@@ -590,22 +816,18 @@ function create3DSign(neighbor, targetNode) {
 
         hotspotsContainer.appendChild(ent);
 
-        // NEW: dashed line from user (camera) to hotspot
-// NEW: dashed line from user (camera) to hotspot
-const lineEnt = document.createElement('a-entity');
-
-// Start point = user viewpoint (cameraRig is at 0 1.6 0 in your scene)
-lineEnt.setAttribute('dashed-line', {
-  start: { x: 0, y: -1.6, z: 0 },
-  end:   { x: pos.x, y: pos.y-0.5, z: pos.z },
-  color: '#ffd166',
-  dashLen: 0.15,        // Longer dashes
-  gapLen: 0.2,        // Bigger gaps
-  radius: 0.05,        // MUCH thicker (was 0.02)
-  opacity: 0.5         // Full opacity
-});
-
-pathLinesContainer.appendChild(lineEnt);
+        // Dashed line from user (camera) to hotspot
+        const lineEnt = document.createElement('a-entity');
+        lineEnt.setAttribute('dashed-line', {
+          start: { x: 0, y: -1.6, z: 0 },
+          end:   { x: pos.x, y: pos.y-0.5, z: pos.z },
+          color: '#ffd166',
+          dashLen: 0.15,
+          gapLen: 0.2,
+          radius: 0.05,
+          opacity: 0.5
+        });
+        pathLinesContainer.appendChild(lineEnt);
 
         hotspotsCreated++;
       }
@@ -662,49 +884,331 @@ pathLinesContainer.appendChild(lineEnt);
     });
   }
 
-// Auto-journey from Lobby -> Hall1 -> Hall2 -> Hall3 -> Hall4 -> Hall5 -> Hall6 (Clinic)
-// Auto-journey from Lobby -> Hall1 -> Hall2 -> Hall3 -> Hall4 -> Hall5 -> Hall6 (Clinic)
-function ToClinic() {
-  // Prevent double-trigger if user spams the button
-  if (journeyInProgress) {
-    statusEl.textContent = "Journey already in progress…";
-    return;
-  }
-  journeyInProgress = true;
+  // Auto-journey to Clinic
+  function ToClinic() {
+    if (journeyInProgress) {
+      statusEl.textContent = "Journey already in progress…";
+      return;
+    }
+    journeyInProgress = true;
 
-  const path = ["lobby", "hall1", "hall2", "hall3", "hall4", "hall5", "Clinic"];
-  const dwellTime = 1400; // ms per location (includes 300ms loader inside goToNode)
-  let index = 0;
+    const path = ["lobby", "hall1", "hall2", "hall3", "hall4", "hall5", "Clinic"];
+    const dwellTime = 1400;
+    let index = 0;
 
-  function step() {
-    const nodeId = path[index];
+    function step() {
+      const nodeId = path[index];
 
-    // On first step, if already at lobby, don’t reload, just start the journey
-    if (index === 0 && currentNodeId === nodeId) {
-      statusEl.textContent = "Starting journey to Clinic";
-    } else {
-      goToNode(nodeId); // uses existing transition+loader logic
+      if (index === 0 && currentNodeId === nodeId) {
+        statusEl.textContent = "Starting journey to Clinic";
+      } else {
+        goToNode(nodeId);
+      }
+
+      if (index < path.length - 1) {
+        statusEl.textContent = "Passing: " + nodes[nodeId].title;
+      } else {
+        statusEl.textContent = "Arrived at Clinic (Hall 6)";
+        journeyInProgress = false;
+        return;
+      }
+
+      index++;
+      setTimeout(step, dwellTime);
     }
 
-    // Update status text for flavor
-    if (index < path.length - 1) {
-      statusEl.textContent = "Passing: " + nodes[nodeId].title;
-    } else {
-      statusEl.textContent = "Arrived at Clinic (Hall 6)";
-      journeyInProgress = false; // journey done
-      return; // stop recursion
-    }
-
-    index++;
-    // Schedule next hop
-    setTimeout(step, dwellTime);
+    step();
   }
 
-  // Kick off the first step
-  step();
-}
+  // Find shortest path between two nodes using BFS
+  function findPath(startId, endId) {
+    if (startId === endId) return [startId];
+    
+    const queue = [[startId]];
+    const visited = new Set([startId]);
+    
+    while (queue.length > 0) {
+      const path = queue.shift();
+      const currentId = path[path.length - 1];
+      const currentNode = nodes[currentId];
+      
+      if (!currentNode) continue;
+      
+      for (const neighbor of currentNode.neighbors) {
+        if (neighbor.id === endId) {
+          return [...path, neighbor.id];
+        }
+        
+        if (!visited.has(neighbor.id)) {
+          visited.add(neighbor.id);
+          queue.push([...path, neighbor.id]);
+        }
+      }
+    }
+    
+    return null;
+  }
 
+  // Start guided journey along planned route
+  function startGuidedJourney() {
+    if (journeyInProgress) {
+      statusEl.textContent = "Journey already in progress…";
+      return;
+    }
+    
+    if (!plannedRoute || plannedRoute.length === 0) {
+      statusEl.innerHTML = '<span class="error">No route planned!</span>';
+      return;
+    }
+    
+    journeyInProgress = true;
+    const dwellTime = 1800;
+    let index = 0;
+    
+    function step() {
+      const nodeId = plannedRoute[index];
+      
+      if (index === 0 && currentNodeId === nodeId) {
+        statusEl.textContent = "Starting journey to " + nodes[routeEndNode].title;
+      } else {
+        goToNode(nodeId);
+      }
+      
+      if (index < plannedRoute.length - 1) {
+        statusEl.textContent = "Step " + (index + 1) + "/" + plannedRoute.length + ": " + nodes[nodeId].title;
+      } else {
+        statusEl.textContent = "✓ Arrived at " + nodes[nodeId].title;
+        journeyInProgress = false;
+        return;
+      }
+      
+      index++;
+      setTimeout(step, dwellTime);
+    }
+    
+    step();
+  }
 
+  // Populate route modal selects
+  function populateRouteSelects() {
+    const startSelect = document.getElementById('startLocation');
+    const endSelect = document.getElementById('endLocation');
+    
+    startSelect.innerHTML = '<option value="">-- Choose where you are now --</option>';
+    endSelect.innerHTML = '<option value="">-- Choose where you want to go --</option>';
+    
+    // Add all nodes to start location, but only destinations to end location
+    Object.values(nodes).forEach(function(node) {
+      // All nodes can be starting points
+      if (node.isDestination) {
+      const startOpt = document.createElement('option');
+      startOpt.value = node.id;
+      startOpt.textContent = node.title;
+      startSelect.appendChild(startOpt);
+      }
+      
+      // Only destination nodes can be end points
+      if (node.isDestination) {
+        const endOpt = document.createElement('option');
+        endOpt.value = node.id;
+        endOpt.textContent = node.title;
+        endSelect.appendChild(endOpt);
+      }
+    });
+  }
+
+  // Show route modal
+  function showRouteModal() {
+    const modal = document.getElementById('routeModal');
+    populateRouteSelects();
+    buildRouteMap(); // Initialize the route map
+    modal.classList.add('show');
+  }
+
+  // Hide route modal
+  function hideRouteModal() {
+    const modal = document.getElementById('routeModal');
+    modal.classList.remove('show');
+  }
+
+  // Toggle mini map
+  function toggleMiniMap() {
+    const mapPanel = document.getElementById('mapPanel');
+    mapPanel.classList.toggle('collapsed');
+  }
+
+  // Build route preview map in modal
+  function buildRouteMap() {
+    console.log('Building route preview map...');
+    routeMapNodes.innerHTML = '';
+    routeMapLines.innerHTML = '';
+    
+    // Draw all destination nodes
+    Object.values(nodes).forEach(function(node) {
+      if (node.isDestination) {
+        const cx = node.mapPos.x || 20;
+        const cy = node.mapPos.y || 50;
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', 5);
+        circle.setAttribute('fill', '#64748b');
+        circle.setAttribute('opacity', '0.6');
+        circle.setAttribute('data-node', node.id);
+        routeMapNodes.appendChild(circle);
+        
+        // Add labels
+        const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        txt.setAttribute('x', cx + 8);
+        txt.setAttribute('y', cy + 3);
+        txt.setAttribute('font-size', 7);
+        txt.setAttribute('fill', '#94a3b8');
+        txt.textContent = node.title.split(' ')[0];
+        routeMapNodes.appendChild(txt);
+      }
+    });
+  }
+
+  // Update route map based on selections
+  function updateRouteMap(startId, endId, path) {
+    // Reset all nodes to default
+    const circles = routeMapNodes.querySelectorAll('circle');
+    circles.forEach(function(c) {
+      c.setAttribute('fill', '#64748b');
+      c.setAttribute('opacity', '0.6');
+      c.setAttribute('r', 5);
+    });
+    
+    // Clear route lines
+    routeMapLines.innerHTML = '';
+    
+    // Highlight start node (green)
+    if (startId) {
+      const startCircle = routeMapNodes.querySelector('[data-node="' + startId + '"]');
+      if (startCircle) {
+        startCircle.setAttribute('fill', '#10b981');
+        startCircle.setAttribute('opacity', '1');
+        startCircle.setAttribute('r', 7);
+      }
+    }
+    
+    // Highlight end node (blue)
+    if (endId) {
+      const endCircle = routeMapNodes.querySelector('[data-node="' + endId + '"]');
+      if (endCircle) {
+        endCircle.setAttribute('fill', '#0b74de');
+        endCircle.setAttribute('opacity', '1');
+        endCircle.setAttribute('r', 7);
+      }
+    }
+    
+    // Draw route path if exists
+    if (path && path.length > 1) {
+      for (let i = 0; i < path.length - 1; i++) {
+        const fromNode = nodes[path[i]];
+        const toNode = nodes[path[i + 1]];
+        
+        if (fromNode && toNode) {
+          const x1 = fromNode.mapPos.x;
+          const y1 = fromNode.mapPos.y;
+          const x2 = toNode.mapPos.x;
+          const y2 = toNode.mapPos.y;
+          
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          line.setAttribute('x1', x1);
+          line.setAttribute('y1', y1);
+          line.setAttribute('x2', x2);
+          line.setAttribute('y2', y2);
+          line.setAttribute('stroke', '#fbbf24');
+          line.setAttribute('stroke-width', 3);
+          line.setAttribute('stroke-linecap', 'round');
+          line.setAttribute('opacity', '0.9');
+          routeMapLines.appendChild(line);
+        }
+      }
+      
+      // Add animated dots along the path
+      const animDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      animDot.setAttribute('r', 3);
+      animDot.setAttribute('fill', '#fbbf24');
+      
+      // Create path for animation
+      let pathD = '';
+      for (let i = 0; i < path.length; i++) {
+        const node = nodes[path[i]];
+        if (node) {
+          const x = node.mapPos.x;
+          const y = node.mapPos.y;
+          pathD += (i === 0 ? 'M' : 'L') + x + ',' + y;
+        }
+      }
+      
+      const animPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      animPath.setAttribute('id', 'routeAnimPath');
+      animPath.setAttribute('d', pathD);
+      animPath.setAttribute('fill', 'none');
+      routeMapLines.appendChild(animPath);
+      
+      const animateMotion = document.createElementNS("http://www.w3.org/2000/svg", "animateMotion");
+      animateMotion.setAttribute('dur', '3s');
+      animateMotion.setAttribute('repeatCount', 'indefinite');
+      
+      const mpath = document.createElementNS("http://www.w3.org/2000/svg", "mpath");
+      mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#routeAnimPath');
+      
+      animateMotion.appendChild(mpath);
+      animDot.appendChild(animateMotion);
+      routeMapLines.appendChild(animDot);
+    }
+  }
+
+  // Handle route selection
+  function updateRouteInfo() {
+    const startSelect = document.getElementById('startLocation');
+    const endSelect = document.getElementById('endLocation');
+    const startBtn = document.getElementById('btn-start-route');
+    const routeInfo = document.getElementById('routeInfo');
+    const routePath = document.getElementById('routePath');
+    
+    const startId = startSelect.value;
+    const endId = endSelect.value;
+    
+    // Update map visualization based on current selections
+    if (startId || endId) {
+      const path = (startId && endId) ? findPath(startId, endId) : null;
+      updateRouteMap(startId, endId, path);
+    } else {
+      updateRouteMap(null, null, null);
+    }
+    
+    if (startId && endId) {
+      if (startId === endId) {
+        routeInfo.classList.remove('show');
+        startBtn.disabled = true;
+        return;
+      }
+      
+      const path = findPath(startId, endId);
+      
+      if (path) {
+        plannedRoute = path;
+        routeStartNode = startId;
+        routeEndNode = endId;
+        
+        const pathNames = path.map(id => nodes[id].title).join(' → ');
+        routePath.textContent = pathNames;
+        routeInfo.classList.add('show');
+        startBtn.disabled = false;
+      } else {
+        routeInfo.classList.remove('show');
+        startBtn.disabled = true;
+        statusEl.innerHTML = '<span class="error">No path found!</span>';
+      }
+    } else {
+      routeInfo.classList.remove('show');
+      startBtn.disabled = true;
+    }
+  }
 
   function toggleDebug(){
     debugMode = !debugMode;
@@ -926,6 +1430,8 @@ function ToClinic() {
     statusEl = document.getElementById('status');
     locationLabel = document.getElementById('locationLabel');
     miniMapGroup = document.querySelector('#nodesSvg');
+    routeMapNodes = document.querySelector('#routeMapNodes');
+    routeMapLines = document.querySelector('#routeMapLines');
     
     console.log('DOM elements found:', {
       sky: !!sky,
@@ -934,7 +1440,9 @@ function ToClinic() {
       loader: !!loader,
       statusEl: !!statusEl,
       locationLabel: !!locationLabel,
-      miniMapGroup: !!miniMapGroup
+      miniMapGroup: !!miniMapGroup,
+      routeMapNodes: !!routeMapNodes,
+      routeMapLines: !!routeMapLines
     });
     
     // Build mini map
@@ -943,12 +1451,27 @@ function ToClinic() {
     
     // Bind UI buttons
     document.getElementById('btn-recenter').addEventListener('click', ToClinic);
-    // document.getElementById('btn-debug').addEventListener('click', toggleDebug);
-    // document.getElementById('btn-edit-mode').addEventListener('click', toggleEditMode);
-    // document.getElementById('btn-close-edit').addEventListener('click', toggleEditMode);
-    // document.getElementById('btn-add-hotspot').addEventListener('click', addHotspot);
-    // document.getElementById('btn-export').addEventListener('click', exportConfig);
-    // document.getElementById('btn-toggle-signs').addEventListener('click', toggleSigns);
+    document.getElementById('btn-plan-route').addEventListener('click', showRouteModal);
+    document.getElementById('mapToggle').addEventListener('click', toggleMiniMap);
+    
+    // Route modal buttons
+    document.getElementById('startLocation').addEventListener('change', updateRouteInfo);
+    document.getElementById('endLocation').addEventListener('change', updateRouteInfo);
+    
+    document.getElementById('btn-start-route').addEventListener('click', function() {
+      hideRouteModal();
+      if (plannedRoute && plannedRoute.length > 0) {
+        goToNode(plannedRoute[0]);
+        setTimeout(function() {
+          startGuidedJourney();
+        }, 1000);
+      }
+    });
+    
+    document.getElementById('btn-skip-route').addEventListener('click', function() {
+      hideRouteModal();
+      goToNode('lobby');
+    });
     
     document.getElementById('targetSelect').addEventListener('change', function(e) {
       const addBtn = document.getElementById('btn-add-hotspot');
@@ -979,8 +1502,8 @@ function ToClinic() {
       
       // Start navigation
       setTimeout(function() {
-        console.log('Starting at lobby node...');
-        goToNode('lobby');
+        console.log('App ready, showing route modal...');
+        showRouteModal();
       }, 200);
     };
     
