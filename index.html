@@ -734,6 +734,7 @@ AFRAME.registerComponent('dashed-line', {
     console.log('Building mini map...');
     miniMapGroup.innerHTML = '';
     Object.values(nodes).forEach(function(node) {
+      if (node.isDestination) {
       const cx = node.mapPos.x || 20;
       const cy = node.mapPos.y || 50;
       const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
@@ -755,7 +756,8 @@ AFRAME.registerComponent('dashed-line', {
       txt.setAttribute('fill', '#cbd5e1');
       txt.textContent = node.title.split(' ')[0];
       miniMapGroup.appendChild(txt);
-    });
+    }
+  });
   }
 
   function updateMiniMapActive(nodeId){
