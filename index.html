@@ -380,7 +380,7 @@
   <!-- Route Selector Modal -->
   <div class="route-modal" id="routeModal">
     <div class="route-modal-content">
-      <h2>🏥 Navigate Hospital Al-Sultan Abdullah</h2>
+      <h2>🏥 Navigate Hospital Al-Sultan Abdullah v2</h2>
       <p>Select your starting point and destination to begin your journey</p>
       
       <div class="route-modal-body">
@@ -1262,19 +1262,19 @@ const nodes = {
   }
 
   // Show route modal
-  function showRouteModal() {
-    const modal = document.getElementById('routeModal');
-    populateRouteSelects();
-    buildRouteMap(); // Initialize the route map
-    
-    // Show loading indicator if scene not ready
-    const loadingIndicator = document.getElementById('sceneLoadingIndicator');
-    if (!window.sceneReady) {
-      loadingIndicator.classList.add('show');
-    }
-    
-    modal.classList.add('show');
+function showRouteModal() {
+  const modal = document.getElementById('routeModal');
+  populateRouteSelects();
+  buildRouteMap();
+
+  // Always sync indicator to current sceneReady state
+  const loadingIndicator = document.getElementById('sceneLoadingIndicator');
+  if (loadingIndicator) {
+    loadingIndicator.classList.toggle('show', !window.sceneReady);
   }
+
+  modal.classList.add('show');
+}
 
   // Hide route modal
   function hideRouteModal() {
@@ -1749,45 +1749,58 @@ const nodes = {
     window.appRemoveHotspot = removeHotspot;
     
     console.log('Event listeners attached');
+
+    function setSceneReady(value) {
+  window.sceneReady = !!value;
+
+  // Hide the "loading in background" indicator if it exists
+  const loadingIndicator = document.getElementById('sceneLoadingIndicator');
+  if (loadingIndicator) {
+    loadingIndicator.classList.toggle('show', !window.sceneReady);
+  }
+}
+
+function hideRouteModalIfOpen() {
+  const modal = document.getElementById('routeModal');
+  if (modal) modal.classList.remove('show');
+}
+
     
     // Wait for A-Frame scene to be ready (in background)
     const scene = document.querySelector('a-scene');
-    
-    const startApp = function() {
-      console.log('Scene loaded in background!');
-      const cam = document.querySelector('#camera');
-if (cam && cam.components['look-controls']) {
-  cam.components['look-controls'].magicWindowControlsEnabled = false; // disables gyro on mobile
-}
-      // Re-query scene elements after A-Frame loads
-      sky = document.querySelector('#sky');
-      hotspotsContainer = document.querySelector('#hotspots');
-      signsContainer = document.querySelector('#signs');
-      
-      console.log('Scene elements after load:', {
-        sky: !!sky,
-        hotspotsContainer: !!hotspotsContainer,
-        signsContainer: !!signsContainer
-      });
-      
-      // Mark scene as ready
-      window.sceneReady = true;
-      console.log('Scene is now ready for navigation');
-      
-      // Hide loading indicator in modal if it's open
-      const loadingIndicator = document.getElementById('sceneLoadingIndicator');
-      if (loadingIndicator) {
-        loadingIndicator.classList.remove('show');
-      }
-    };
-    
-    if(scene.hasLoaded){
-      console.log('Scene already loaded');
+
+const startApp = () => {
+  console.log('Scene loaded in background!');
+
+  // Re-query AFTER A-Frame initializes (important)
+  sky = document.querySelector('#sky');
+  hotspotsContainer = document.querySelector('#hotspots');
+  signsContainer = document.querySelector('#signs');
+  pathLinesContainer = document.querySelector('#pathlines'); // IMPORTANT (you missed this before)
+
+  // Mark as ready + hide "loading in background"
+  setSceneReady(true);
+
+  // Also hide the big overlay loader if it's showing
+  showLoader(false);
+
+  console.log('Scene is now ready for navigation');
+};
+
+// Bind reliably
+if (scene.hasLoaded) {
+  startApp();
+} else {
+  scene.addEventListener('loaded', startApp, { once: true });
+
+  // Fallback: if for some reason "loaded" doesn't fire, don't get stuck forever
+  setTimeout(() => {
+    if (!window.sceneReady) {
+      console.warn('Scene load event not detected. Forcing sceneReady=true (fallback).');
       startApp();
-    } else {
-      console.log('Waiting for scene to load in background...');
-      scene.addEventListener('loaded', startApp);
     }
+  }, 4000);
+}
   }
 
   // Helper function to wait for scene to be ready
