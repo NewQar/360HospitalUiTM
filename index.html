@@ -23,6 +23,10 @@
     overflow:hidden;
   }
 
+  canvas, .a-canvas {
+  touch-action: none;
+}
+
   .topbar{
     position:absolute;left:12px;top:12px;z-index:50;
     background:linear-gradient(180deg, rgba(17,24,39,0.85), rgba(17,24,39,0.6));
@@ -379,7 +383,7 @@
   <!-- Route Selector Modal -->
   <div class="route-modal" id="routeModal">
     <div class="route-modal-content">
-      <h2>🏥 Navigate Hospital Al-Sultan Abdullah v7</h2>
+      <h2>🏥 Navigate Hospital Al-Sultan Abdullah v8</h2>
       <p>Select your starting point and destination to begin your journey</p>
       
       <div class="route-modal-body">
@@ -496,6 +500,89 @@
 </div>
 
 <script>
+
+AFRAME.registerComponent('pinch-zoom', {
+  schema: {
+    minFov: { type: 'number', default: 35 },
+    maxFov: { type: 'number', default: 95 },
+    speed:  { type: 'number', default: 0.12 }
+  },
+
+  init() {
+    this.cameraEl = this.el;
+    this.startDist = null;
+    this.startFov = null;
+
+    this.onTouchStart = this.onTouchStart.bind(this);
+    this.onTouchMove  = this.onTouchMove.bind(this);
+    this.onTouchEnd   = this.onTouchEnd.bind(this);
+
+    const sceneEl = this.el.sceneEl;
+
+    const bind = () => {
+      const canvas = sceneEl && sceneEl.canvas;
+      if (!canvas) return;
+
+      canvas.style.touchAction = 'none';
+
+      canvas.addEventListener('touchstart', this.onTouchStart, { passive: false });
+      canvas.addEventListener('touchmove',  this.onTouchMove,  { passive: false });
+      canvas.addEventListener('touchend',   this.onTouchEnd,   { passive: false });
+      canvas.addEventListener('touchcancel',this.onTouchEnd,   { passive: false });
+    };
+
+    if (sceneEl && sceneEl.canvas) bind();
+    else sceneEl.addEventListener('render-target-loaded', bind, { once: true });
+  },
+
+  remove() {
+    const sceneEl = this.el.sceneEl;
+    const canvas = sceneEl && sceneEl.canvas;
+    if (!canvas) return;
+
+    canvas.removeEventListener('touchstart', this.onTouchStart);
+    canvas.removeEventListener('touchmove',  this.onTouchMove);
+    canvas.removeEventListener('touchend',   this.onTouchEnd);
+    canvas.removeEventListener('touchcancel',this.onTouchEnd);
+  },
+
+  getDist(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx*dx + dy*dy);
+  },
+
+  onTouchStart(e) {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      this.startDist = this.getDist(e.touches);
+      const cam = this.cameraEl.getObject3D('camera');
+      this.startFov = cam ? cam.fov : 80;
+    }
+  },
+
+  onTouchMove(e) {
+    if (e.touches.length !== 2 || this.startDist == null || this.startFov == null) return;
+    e.preventDefault();
+
+    const dist = this.getDist(e.touches);
+    const cam = this.cameraEl.getObject3D('camera');
+    if (!cam) return;
+
+    // pinch out => dist increases => zoom in (lower FOV)
+    const delta = (dist - this.startDist) * this.data.speed;
+    let nextFov = this.startFov - delta;
+    nextFov = Math.max(this.data.minFov, Math.min(this.data.maxFov, nextFov));
+
+    cam.fov = nextFov;
+    cam.updateProjectionMatrix();
+  },
+
+  onTouchEnd() {
+    this.startDist = null;
+    this.startFov = null;
+  }
+});
 
 // Dashed line component using Three.js
 AFRAME.registerComponent('dashed-line', {
@@ -1657,77 +1744,6 @@ function showRouteModal() {
     console.log(config);
     console.log('===================');
   }
-
-AFRAME.registerComponent('pinch-zoom', {
-  schema: {
-    minFov: { type: 'number', default: 35 },   // zoom in limit
-    maxFov: { type: 'number', default: 95 },   // zoom out limit
-    speed:  { type: 'number', default: 0.08 }  // sensitivity
-  },
-
-  init() {
-    this.cameraEl = this.el; // assumes this component is on the camera entity
-    this.startDist = null;
-    this.startFov = null;
-
-    this.onTouchStart = this.onTouchStart.bind(this);
-    this.onTouchMove  = this.onTouchMove.bind(this);
-    this.onTouchEnd   = this.onTouchEnd.bind(this);
-
-    this.el.sceneEl.canvas.addEventListener('touchstart', this.onTouchStart, { passive: false });
-    this.el.sceneEl.canvas.addEventListener('touchmove',  this.onTouchMove,  { passive: false });
-    this.el.sceneEl.canvas.addEventListener('touchend',   this.onTouchEnd,   { passive: false });
-    this.el.sceneEl.canvas.addEventListener('touchcancel',this.onTouchEnd,   { passive: false });
-  },
-
-  remove() {
-    if (!this.el.sceneEl || !this.el.sceneEl.canvas) return;
-    const c = this.el.sceneEl.canvas;
-    c.removeEventListener('touchstart', this.onTouchStart);
-    c.removeEventListener('touchmove',  this.onTouchMove);
-    c.removeEventListener('touchend',   this.onTouchEnd);
-    c.removeEventListener('touchcancel',this.onTouchEnd);
-  },
-
-  getDist(touches) {
-    const dx = touches[0].clientX - touches[1].clientX;
-    const dy = touches[0].clientY - touches[1].clientY;
-    return Math.sqrt(dx*dx + dy*dy);
-  },
-
-  onTouchStart(e) {
-    if (e.touches.length === 2) {
-      e.preventDefault();
-      this.startDist = this.getDist(e.touches);
-      const cam = this.cameraEl.getObject3D('camera');
-      this.startFov = cam ? cam.fov : 80;
-    }
-  },
-
-  onTouchMove(e) {
-    if (e.touches.length !== 2 || this.startDist === null || this.startFov === null) return;
-    e.preventDefault();
-
-    const dist = this.getDist(e.touches);
-    const delta = (dist - this.startDist) * this.data.speed;
-
-    const cam = this.cameraEl.getObject3D('camera');
-    if (!cam) return;
-
-    // pinch OUT => dist bigger => delta positive => reduce FOV => zoom in
-    let nextFov = this.startFov - delta;
-    nextFov = Math.max(this.data.minFov, Math.min(this.data.maxFov, nextFov));
-
-    cam.fov = nextFov;
-    cam.updateProjectionMatrix();
-  },
-
-  onTouchEnd() {
-    this.startDist = null;
-    this.startFov = null;
-  }
-});
-
 
   function init(){
     console.log('Initializing app...');
