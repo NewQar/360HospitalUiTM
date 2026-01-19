@@ -383,7 +383,7 @@
   <!-- Route Selector Modal -->
   <div class="route-modal" id="routeModal">
     <div class="route-modal-content">
-      <h2>🏥 Navigate Hospital Al-Sultan Abdullah v9</h2>
+      <h2>🏥 Navigate Hospital Al-Sultan Abdullah v3</h2>
       <p>Select your starting point and destination to begin your journey</p>
       
       <div class="route-modal-body">
@@ -1221,8 +1221,8 @@ function setSkyWithProgressive(lowSrcSelector, hdUrl) {
       if(n.useHotspot !== false) {
         const pos = sphericalToCartesian(n.yaw || 0, n.pitch || 0, n.jauh);
         const ent = document.createElement('a-entity');
-        ent.setAttribute('geometry','primitive: ring; radiusInner: 0.12; radiusOuter: 0.18');
-        ent.setAttribute('material','color: #ffd166; shader: flat; opacity: 0.92');
+        ent.setAttribute('geometry','primitive: ring; radiusInner: 0.15; radiusOuter: 0.25');
+        ent.setAttribute('material','color: #ffd166; shader: flat; opacity: 0.52');
         ent.setAttribute('position', pos.x + ' ' + pos.y + ' ' + pos.z);
         ent.setAttribute('rotation', '0 ' + (-n.yaw) + ' 0');
         ent.setAttribute('class', 'hotspot clickable');
@@ -1232,6 +1232,7 @@ function setSkyWithProgressive(lowSrcSelector, hdUrl) {
         const txt = document.createElement('a-entity');
         txt.setAttribute('text', 'value: ' + targetNode.title + '; align: center; width: 2.4; color: #e6eef6');
         txt.setAttribute('position','0 -0.28 0');
+
         ent.appendChild(txt);
 
         ent.addEventListener('click', function(e) {
