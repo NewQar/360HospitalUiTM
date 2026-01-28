@@ -24,8 +24,8 @@
   }
 
   canvas, .a-canvas {
-  touch-action: none;
-}
+    touch-action: none;
+  }
 
   .topbar{
     position:absolute;left:12px;top:12px;z-index:50;
@@ -88,7 +88,7 @@
     position:absolute; inset:0; z-index:60; display:flex;align-items:center;justify-content:center;
     background:linear-gradient(180deg, rgba(3,7,18,0.5), rgba(3,7,18,0.4));
     backdrop-filter: blur(2px);
-    visibility:hidden; opacity:0; transition:all .04s ease;
+    visibility:hidden; opacity:0; transition:all .4s ease;
   }
   .loader.show{visibility:visible;opacity:1}
   .spinner{
@@ -99,43 +99,6 @@
   @keyframes pop{from{transform:scale(.86)}to{transform:scale(1.03)}}
 
   .note{position:absolute;left:50%;transform:translateX(-50%);bottom:22px;color:#cbd5e1;font-size:12px;opacity:0.8;z-index:45}
-
-  /* Edit Panel */
-  .edit-panel{
-    position:absolute;left:12px;top:80px;z-index:50;width:300px;
-    background:var(--ui);padding:0;border-radius:10px;
-    box-shadow:0 6px 18px rgba(2,6,23,0.6);color:var(--text);
-  }
-  .edit-header{
-    padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.1);
-    display:flex;justify-content:space-between;align-items:center;
-  }
-  .edit-content{padding:12px 14px;max-height:70vh;overflow-y:auto;}
-  .btn-close{
-    background:transparent;border:0;color:var(--text);font-size:24px;
-    cursor:pointer;padding:0;width:24px;height:24px;line-height:20px;
-  }
-  .edit-select{
-    width:100%;padding:8px;background:rgba(255,255,255,0.05);
-    border:1px solid rgba(255,255,255,0.1);border-radius:6px;
-    color:var(--text);font-size:12px;
-  }
-  .hotspot-item{
-    padding:8px;background:rgba(255,255,255,0.03);border-radius:4px;
-    margin-bottom:6px;font-size:11px;display:flex;justify-content:space-between;
-    align-items:center;
-  }
-  .btn-remove{
-    background:#dc2626;color:#fff;border:0;padding:4px 8px;
-    border-radius:4px;cursor:pointer;font-size:10px;
-  }
-  .checkbox-group{
-    margin:12px 0;padding:10px;background:rgba(255,255,255,0.03);border-radius:6px;
-  }
-  .checkbox-label{
-    display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;
-  }
-  .checkbox-label input{cursor:pointer}
 
   /* Route Selector Modal */
   .route-modal {
@@ -339,51 +302,10 @@
     <div class="status" id="status">Ready</div>
   </div>
 
-  <!-- Edit Mode Panel -->
-  <div class="edit-panel" id="editPanel" style="display:none">
-    <div class="edit-header">
-      <strong>Edit Mode</strong>
-      <button class="btn-close" id="btn-close-edit">×</button>
-    </div>
-    <div class="edit-content">
-      <p style="margin:0 0 10px 0;font-size:12px">Click anywhere in the 360° view to place a navigation point</p>
-      
-      <label style="font-size:12px;display:block;margin-bottom:6px">Target Location:</label>
-      <select id="targetSelect" class="edit-select">
-        <option value="">-- Select destination --</option>
-      </select>
-
-      <div class="checkbox-group">
-        <label class="checkbox-label">
-          <input type="checkbox" id="use3DSign" checked>
-          <span>Use 3D Signage (Arrow + Text)</span>
-        </label>
-        <label class="checkbox-label">
-          <input type="checkbox" id="useHotspot" checked>
-          <span>Use Hotspot Ring</span>
-        </label>
-      </div>
-      
-      <div style="margin-top:12px;padding:10px;background:rgba(255,255,255,0.05);border-radius:6px;font-size:11px">
-        <div><strong>Last Clicked:</strong></div>
-        <div id="clickInfo" style="margin-top:4px;color:#94a3b8">Click in view to see coordinates</div>
-      </div>
-      
-      <button class="btn" id="btn-add-hotspot" style="width:100%;margin-top:12px" disabled>Add Navigation Point</button>
-      
-      <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1)">
-        <strong style="font-size:12px">Current Navigation Points:</strong>
-        <div id="hotspotList" style="margin-top:8px;max-height:150px;overflow-y:auto"></div>
-      </div>
-      
-      <button class="btn" id="btn-export" style="width:100%;margin-top:12px;background:#059669">Export Config</button>
-    </div>
-  </div>
-
   <!-- Route Selector Modal -->
   <div class="route-modal" id="routeModal">
     <div class="route-modal-content">
-      <h2>🏥 Navigate Hospital Al-Sultan Abdullah v10</h2>
+      <h2>🏥 Navigate Hospital Al-Sultan Abdullah v3</h2>
       <p>Select your starting point and destination to begin your journey</p>
       
       <div class="route-modal-body">
@@ -412,7 +334,6 @@
           </div>
         </div>
 
-        <!-- Map Besau -->
         <div class="route-modal-right">
           <div style="font-size: 12px; margin-bottom: 8px; color: #94a3b8;">Route Preview:</div>
           <div class="route-modal-map">
@@ -438,7 +359,7 @@
     </div>
   </div>
 
-  <div class="note">Tip: Use mouse to look around. Click 3D signs or hotspots to navigate.</div>
+  <div class="note">Tip: Use mouse/touch to look around. Pinch to zoom. Click hotspots to navigate.</div>
 
   <div class="loader" id="loader">
     <div class="spinner">
@@ -448,72 +369,64 @@
   </div>
 
   <a-scene embedded vr-mode-ui="enabled: false" renderer="antialias: true; colorManagement: true">
-    <!-- Assets --><a-assets>
-  <img id="lobby-img-low" src="1-0Lobby_low.jpg" crossorigin="anonymous">
-  <img id="Recep-img-low" src="test2_low.jpg" crossorigin="anonymous">
-  <img id="Bayaran-img-low" src="1-1Kaunter_low.jpg" crossorigin="anonymous">
-  <img id="1-2-img-low" src="1-2_low.jpg" crossorigin="anonymous">
-  <img id="1-3-img-low" src="1-3_low.jpg" crossorigin="anonymous">
-  <img id="1-4-img-low" src="1-4_low.jpg" crossorigin="anonymous">
-  <img id="1-5-img-low" src="1-5_low.jpg" crossorigin="anonymous">
-  <img id="Farmasi-img-low" src="2-0Farmasi_low.jpg" crossorigin="anonymous">
-  <img id="2-1-img-low" src="2-1_low.jpg" crossorigin="anonymous">
-  <img id="2-2-img-low" src="2-2_low.jpg" crossorigin="anonymous">
-  <img id="3-0-img-low" src="3-0Ortho_low.jpg" crossorigin="anonymous">
-  <img id="3-1-img-low" src="3-1_low.jpg" crossorigin="anonymous">
-  <img id="4-0-img-low" src="4-0Ofta_low.jpg" crossorigin="anonymous">
-  <img id="5-0-img-low" src="5-0Darah_low.jpg" crossorigin="anonymous">
-  <img id="5-1-img-low" src="5-1_low.jpg" crossorigin="anonymous">
-  <img id="5-2-img-low" src="5-2_low.jpg" crossorigin="anonymous">
-  <img id="5A-1-img-low" src="5A-1_low.jpg" crossorigin="anonymous">
-  <img id="5A-2-img-low" src="5A-2_low.jpg" crossorigin="anonymous">
-  <img id="5A-3-img-low" src="5A-3_low.jpg" crossorigin="anonymous">
-  <img id="6-0-img-low" src="6-0Ubat_low.jpg" crossorigin="anonymous">
-  <img id="6A-0-img-low" src="6A-0FarmasiPakar_low.jpg" crossorigin="anonymous">
-</a-assets>
+    <a-assets>
+      <img id="lobby-img-low" src="1-0Lobby_low.jpg" crossorigin="anonymous">
+      <img id="Recep-img-low" src="test2_low.jpg" crossorigin="anonymous">
+      <img id="Bayaran-img-low" src="1-1Kaunter_low.jpg" crossorigin="anonymous">
+      <img id="1-2-img-low" src="1-2_low.jpg" crossorigin="anonymous">
+      <img id="1-3-img-low" src="1-3_low.jpg" crossorigin="anonymous">
+      <img id="1-4-img-low" src="1-4_low.jpg" crossorigin="anonymous">
+      <img id="1-5-img-low" src="1-5_low.jpg" crossorigin="anonymous">
+      <img id="Farmasi-img-low" src="2-0Farmasi_low.jpg" crossorigin="anonymous">
+      <img id="2-1-img-low" src="2-1_low.jpg" crossorigin="anonymous">
+      <img id="2-2-img-low" src="2-2_low.jpg" crossorigin="anonymous">
+      <img id="3-0-img-low" src="3-0Ortho_low.jpg" crossorigin="anonymous">
+      <img id="3-1-img-low" src="3-1_low.jpg" crossorigin="anonymous">
+      <img id="4-0-img-low" src="4-0Ofta_low.jpg" crossorigin="anonymous">
+      <img id="5-0-img-low" src="5-0Darah_low.jpg" crossorigin="anonymous">
+      <img id="5-1-img-low" src="5-1_low.jpg" crossorigin="anonymous">
+      <img id="5-2-img-low" src="5-2_low.jpg" crossorigin="anonymous">
+      <img id="5A-1-img-low" src="5A-1_low.jpg" crossorigin="anonymous">
+      <img id="5A-2-img-low" src="5A-2_low.jpg" crossorigin="anonymous">
+      <img id="5A-3-img-low" src="5A-3_low.jpg" crossorigin="anonymous">
+      <img id="6-0-img-low" src="6-0Ubat_low.jpg" crossorigin="anonymous">
+      <img id="6A-0-img-low" src="6A-0FarmasiPakar_low.jpg" crossorigin="anonymous">
+    </a-assets>
 
-
-<a-entity id="cameraRig" position="0 1.6 0">
-  <a-entity
-    id="camera"
-    camera="fov: 80"
-    wasd-controls="enabled: false"
-    touch-look-zoom="minPitch:-85; maxPitch:85; dragSpeed:0.18; minFov:40; maxFov:100; zoomSpeed:0.18">
-
-    <!-- keep cursor only for desktop clicking; hidden ring -->
-    <a-entity
-      id="cursor"
-      cursor="rayOrigin: mouse; fuse: false"
-      raycaster="objects: .clickable; far: 100"
-      position="0 0 -1"
-      geometry="primitive: ring; radiusInner: 0.0; radiusOuter: 0.0"
-      material="opacity: 0">
+    <a-entity id="cameraRig" position="0 1.6 0">
+      <a-entity
+        id="camera"
+        camera="fov: 80"
+        wasd-controls="enabled: false"
+        touch-look-zoom="minPitch:-85; maxPitch:85; dragSpeed:0.18; minFov:30; maxFov:110; zoomSpeed:0.18">
+        <a-entity
+          id="cursor"
+          cursor="rayOrigin: mouse; fuse: false"
+          raycaster="objects: .clickable; far: 100"
+          position="0 0 -1"
+          geometry="primitive: ring; radiusInner: 0.0; radiusOuter: 0.0"
+          material="opacity: 0">
+        </a-entity>
+      </a-entity>
     </a-entity>
-
-  </a-entity>
-</a-entity>
-
 
     <a-sky id="sky" radius="5000" src="#lobby-img-low" rotation="0 5 0"></a-sky>
     <a-entity id="pathlines"></a-entity>
     <a-entity id="hotspots"></a-entity>
-    <a-entity id="signs"></a-entity>
-
-    <a-entity light="type: ambient; color: #ffffff; intensity: 0.4"></a-entity>
-    <a-entity light="type: directional; color: #ffffff; intensity: 0.5" position="1 1 0"></a-entity>
   </a-scene>
 
 </div>
 
 <script>
 
+// Enhanced touch-look-zoom component with blur effect on extreme zoom
 AFRAME.registerComponent('touch-look-zoom', {
   schema: {
     minPitch:  { type: 'number', default: -85 },
     maxPitch:  { type: 'number', default: 85 },
-    dragSpeed: { type: 'number', default: 0.18 },  // degrees per px-ish
-    minFov:    { type: 'number', default: 40 },
-    maxFov:    { type: 'number', default: 100 },
+    dragSpeed: { type: 'number', default: 0.18 },
+    minFov:    { type: 'number', default: 30 },
+    maxFov:    { type: 'number', default: 110 },
     zoomSpeed: { type: 'number', default: 0.18 }
   },
 
@@ -521,14 +434,12 @@ AFRAME.registerComponent('touch-look-zoom', {
     this.prevX = null;
     this.prevY = null;
     this.dragging = false;
-
     this.startDist = null;
     this.startFov = null;
 
     this.onPointerDown = this.onPointerDown.bind(this);
     this.onPointerMove = this.onPointerMove.bind(this);
     this.onPointerUp   = this.onPointerUp.bind(this);
-
     this.onTouchStart = this.onTouchStart.bind(this);
     this.onTouchMove  = this.onTouchMove.bind(this);
     this.onTouchEnd   = this.onTouchEnd.bind(this);
@@ -538,15 +449,12 @@ AFRAME.registerComponent('touch-look-zoom', {
       const canvas = sceneEl && sceneEl.canvas;
       if (!canvas) return;
 
-      // critical for iOS + Android: stop browser scrolling/zooming
       canvas.style.touchAction = 'none';
 
-      // Pointer (mouse / single touch on many browsers)
       canvas.addEventListener('pointerdown', this.onPointerDown, { passive: false });
       canvas.addEventListener('pointermove', this.onPointerMove, { passive: false });
       window.addEventListener('pointerup', this.onPointerUp, { passive: false });
 
-      // Touch (needed for 2-finger pinch reliably)
       canvas.addEventListener('touchstart', this.onTouchStart, { passive: false });
       canvas.addEventListener('touchmove',  this.onTouchMove,  { passive: false });
       canvas.addEventListener('touchend',   this.onTouchEnd,   { passive: false });
@@ -565,18 +473,14 @@ AFRAME.registerComponent('touch-look-zoom', {
     canvas.removeEventListener('pointerdown', this.onPointerDown);
     canvas.removeEventListener('pointermove', this.onPointerMove);
     window.removeEventListener('pointerup', this.onPointerUp);
-
     canvas.removeEventListener('touchstart', this.onTouchStart);
     canvas.removeEventListener('touchmove',  this.onTouchMove);
     canvas.removeEventListener('touchend',   this.onTouchEnd);
     canvas.removeEventListener('touchcancel',this.onTouchEnd);
   },
 
-  // ---------- DRAG LOOK (1 pointer) ----------
   onPointerDown(e) {
-    // Ignore if 2+ touch is happening (pinch handler will take over)
     if (e.pointerType === 'touch' && e.isPrimary === false) return;
-
     this.dragging = true;
     this.prevX = e.clientX;
     this.prevY = e.clientY;
@@ -584,8 +488,6 @@ AFRAME.registerComponent('touch-look-zoom', {
 
   onPointerMove(e) {
     if (!this.dragging) return;
-
-    // If user is doing pinch (2 touches), do not rotate here
     if (e.pointerType === 'touch' && e.isPrimary === false) return;
 
     const dx = e.clientX - this.prevX;
@@ -597,9 +499,7 @@ AFRAME.registerComponent('touch-look-zoom', {
     let yaw = rot.y - dx * this.data.dragSpeed;
     let pitch = rot.x - dy * this.data.dragSpeed;
 
-    // clamp pitch
     pitch = Math.max(this.data.minPitch, Math.min(this.data.maxPitch, pitch));
-
     this.el.setAttribute('rotation', { x: pitch, y: yaw, z: 0 });
   },
 
@@ -609,7 +509,6 @@ AFRAME.registerComponent('touch-look-zoom', {
     this.prevY = null;
   },
 
-  // ---------- PINCH ZOOM (2 fingers) ----------
   getDist(touches) {
     const dx = touches[0].clientX - touches[1].clientX;
     const dy = touches[0].clientY - touches[1].clientY;
@@ -620,7 +519,6 @@ AFRAME.registerComponent('touch-look-zoom', {
     if (e.touches.length === 2) {
       e.preventDefault();
       this.startDist = this.getDist(e.touches);
-
       const cam = this.el.getObject3D('camera');
       this.startFov = cam ? cam.fov : 80;
     }
@@ -635,13 +533,14 @@ AFRAME.registerComponent('touch-look-zoom', {
     if (!cam) return;
 
     const delta = (dist - this.startDist) * this.data.zoomSpeed;
-
-    // pinch out => dist increases => zoom in => reduce FOV
     let nextFov = this.startFov - delta;
     nextFov = Math.max(this.data.minFov, Math.min(this.data.maxFov, nextFov));
 
     cam.fov = nextFov;
     cam.updateProjectionMatrix();
+    
+    // Apply blur effect when zoomed out beyond normal FOV (80)
+    this.updateBlurEffect(nextFov);
   },
 
   onTouchEnd() {
@@ -649,11 +548,35 @@ AFRAME.registerComponent('touch-look-zoom', {
       this.startDist = null;
       this.startFov = null;
     }
+  },
+
+  updateBlurEffect(fov) {
+    const sky = document.querySelector('#sky');
+    if (!sky) return;
+    
+    // Apply blur when FOV > 90 (zoomed out)
+    if (fov > 90) {
+      const blurAmount = ((fov - 90) / 20) * 3; // 0 to 3px blur
+      sky.setAttribute('material', 'shader', 'flat');
+      sky.object3D.traverse((node) => {
+        if (node.material && node.material.map) {
+          // Use CSS filter on canvas instead for better performance
+          const canvas = this.el.sceneEl.canvas;
+          if (canvas) {
+            canvas.style.filter = `blur(${blurAmount}px)`;
+          }
+        }
+      });
+    } else {
+      const canvas = this.el.sceneEl.canvas;
+      if (canvas) {
+        canvas.style.filter = 'none';
+      }
+    }
   }
 });
 
-
-// Dashed line component using Three.js
+// Dashed line component
 AFRAME.registerComponent('dashed-line', {
   schema: {
     start:   { type: 'vec3', default: { x: 0, y: -1.6, z: 0 } },
@@ -673,7 +596,6 @@ AFRAME.registerComponent('dashed-line', {
   update() {
     const d = this.data;
 
-    // clear old
     while (this.group.children.length) {
       const obj = this.group.children.pop();
       obj.geometry.dispose();
@@ -698,7 +620,6 @@ AFRAME.registerComponent('dashed-line', {
       depthWrite: false
     });
 
-    // build dashed cylinders
     let travelled = 0;
     while (travelled < totalLen) {
       const segLen = Math.min(d.dashLen, totalLen - travelled);
@@ -710,10 +631,7 @@ AFRAME.registerComponent('dashed-line', {
 
       const mesh = new THREE.Mesh(cyl, material.clone());
       mesh.position.copy(mid);
-
-      // rotate cylinder to align with direction
       mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
-
       mesh.renderOrder = 1000;
       this.group.add(mesh);
 
@@ -733,322 +651,295 @@ AFRAME.registerComponent('dashed-line', {
 
 (function() {
   'use strict';
-  
-  console.log('Script starting...');
 
-// Navigation configuration (LOW-res first, then swap to HD)
-const nodes = {
-  "lobby": {
-    id: "lobby",
-    title: "Lobby",
-    type: "image",
-    srcLow: "#lobby-img-low",
-    srcHd:  "1-0Lobby.jpg",
-    mapPos: {x: 15, y: 140},
-    isDestination: true,
-    neighbors: [
-      {id: "Receptionist", yaw: 110, pitch: 10, jauh: 5.5, use3DSign: true, useHotspot: false},
-      {id: "Kaunter Bayaran", yaw: 60, pitch: 12, jauh: 6, use3DSign: true, useHotspot: false},
-      {id: "1-2", yaw: 0, pitch: 15, jauh: 6, use3DSign: false, useHotspot: true}
-    ]
-  },
+  // Navigation configuration
+  const nodes = {
+    "lobby": {
+      id: "lobby",
+      title: "Lobby",
+      type: "image",
+      srcLow: "#lobby-img-low",
+      srcHd:  "1-0Lobby.jpg",
+      mapPos: {x: 15, y: 140},
+      isDestination: true,
+      neighbors: [
+        {id: "Receptionist", yaw: 110, pitch: 10, jauh: 5.5},
+        {id: "Kaunter Bayaran", yaw: 60, pitch: 12, jauh: 6},
+        {id: "1-2", yaw: 0, pitch: 15, jauh: 6}
+      ]
+    },
+    "Receptionist": {
+      id: "Receptionist",
+      title: "Receptionist",
+      type: "image",
+      srcLow: "#Recep-img-low",
+      srcHd:  "test2.jpg",
+      mapPos: {x: 50, y: 140},
+      isDestination: true,
+      neighbors: [
+        {id: "lobby", yaw: -1, pitch: 0, jauh: 5.3},
+        {id: "Kaunter Bayaran", yaw: 130, pitch: 10, jauh: 5.5}
+      ]
+    },
+    "Kaunter Bayaran": {
+      id: "Kaunter Bayaran",
+      title: "Kaunter Bayaran",
+      type: "image",
+      srcLow: "#Bayaran-img-low",
+      srcHd:  "1-1Kaunter.jpg",
+      mapPos: {x: 50, y: 120},
+      isDestination: true,
+      neighbors: [
+        {id: "Receptionist", yaw: 108, pitch: 10, jauh: 5.5},
+        {id: "lobby", yaw: 155, pitch: 12.5, jauh: 5.5}
+      ]
+    },
+    "1-2": {
+      id: "1-2",
+      title: "Hall 1",
+      type: "image",
+      srcLow: "#1-2-img-low",
+      srcHd:  "1-2.jpg",
+      mapPos: {x: 15, y: 110},
+      isDestination: false,
+      neighbors: [
+        {id: "lobby", yaw: 173, pitch: 15, jauh: 5.5},
+        {id: "1-3", yaw: -5, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "1-3": {
+      id: "1-3",
+      title: "Hall 2",
+      type: "image",
+      srcLow: "#1-3-img-low",
+      srcHd:  "1-3.jpg",
+      mapPos: {x: 15, y: 80},
+      isDestination: false,
+      neighbors: [
+        {id: "1-2", yaw: 180, pitch: 15, jauh: 5.5},
+        {id: "1-4", yaw: 20, pitch: 15, jauh: 5.5},
+        {id: "6A-0", yaw: 20, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "1-4": {
+      id: "1-4",
+      title: "Hall 3",
+      type: "image",
+      srcLow: "#1-4-img-low",
+      srcHd:  "1-4.jpg",
+      mapPos: {x: 15, y: 50},
+      isDestination: false,
+      neighbors: [
+        {id: "1-3", yaw: 125, pitch: 10, jauh: 4.5},
+        {id: "1-5", yaw: 1, pitch: 18, jauh: 5.5}
+      ]
+    },
+    "1-5": {
+      id: "1-5",
+      title: "Hall 4",
+      type: "image",
+      srcLow: "#1-5-img-low",
+      srcHd:  "1-5.jpg",
+      mapPos: {x: 15, y: 20},
+      isDestination: false,
+      neighbors: [
+        {id: "1-4", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "Farmasi", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "Farmasi": {
+      id: "Farmasi",
+      title: "Pharmacy",
+      type: "image",
+      srcLow: "#Farmasi-img-low",
+      srcHd:  "2-0Farmasi.jpg",
+      mapPos: {x: 50, y: 20},
+      isDestination: true,
+      neighbors: [
+        {id: "1-5", yaw: 181, pitch: 10, jauh: 4.5},
+        {id: "2-1", yaw: 1, pitch: 12, jauh: 5}
+      ]
+    },
+    "2-1": {
+      id: "2-1",
+      title: "2-1",
+      type: "image",
+      srcLow: "#2-1-img-low",
+      srcHd:  "2-1.jpg",
+      mapPos: {x: 70, y: 20},
+      isDestination: false,
+      neighbors: [
+        {id: "Farmasi", yaw: -130, pitch: 15, jauh: 5.5},
+        {id: "2-2", yaw: 170, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "2-2": {
+      id: "2-2",
+      title: "2-2",
+      type: "image",
+      srcLow: "#2-2-img-low",
+      srcHd:  "2-2.jpg",
+      mapPos: {x: 90, y: 20},
+      isDestination: false,
+      neighbors: [
+        {id: "2-1", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "3-0", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "3-0": {
+      id: "3-0",
+      title: "Ortho",
+      type: "image",
+      srcLow: "#3-0-img-low",
+      srcHd:  "3-0Ortho.jpg",
+      mapPos: {x: 110, y: 20},
+      isDestination: true,
+      neighbors: [
+        {id: "2-2", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "3-1", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "3-1": {
+      id: "3-1",
+      title: "3-1",
+      type: "image",
+      srcLow: "#3-1-img-low",
+      srcHd:  "3-1.jpg",
+      mapPos: {x: 135, y: 20},
+      isDestination: false,
+      neighbors: [
+        {id: "3-0", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "4-0", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "4-0": {
+      id: "4-0",
+      title: "Ofta",
+      type: "image",
+      srcLow: "#4-0-img-low",
+      srcHd:  "4-0Ofta.jpg",
+      mapPos: {x: 160, y: 20},
+      isDestination: true,
+      neighbors: [
+        {id: "3-1", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "5-0", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "5-0": {
+      id: "5-0",
+      title: "Darah",
+      type: "image",
+      srcLow: "#5-0-img-low",
+      srcHd:  "5-0Darah.jpg",
+      mapPos: {x: 160, y: 50},
+      isDestination: true,
+      neighbors: [
+        {id: "4-0", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "5-1", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "5-1": {
+      id: "5-1",
+      title: "5-1",
+      type: "image",
+      srcLow: "#5-1-img-low",
+      srcHd:  "5-1.jpg",
+      mapPos: {x: 160, y: 75},
+      isDestination: false,
+      neighbors: [
+        {id: "5-0", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "5-2", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "5-2": {
+      id: "5-2",
+      title: "5-2",
+      type: "image",
+      srcLow: "#5-2-img-low",
+      srcHd:  "5-2.jpg",
+      mapPos: {x: 160, y: 90},
+      isDestination: false,
+      neighbors: [
+        {id: "5-1", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "6-0", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "5A-1": {
+      id: "5A-1",
+      title: "5A-1",
+      type: "image",
+      srcLow: "#5A-1-img-low",
+      srcHd:  "5A-1.jpg",
+      mapPos: {x: 125, y: 75},
+      isDestination: false,
+      neighbors: [
+        {id: "5-1", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "5A-2", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "5A-2": {
+      id: "5A-2",
+      title: "5A-2",
+      type: "image",
+      srcLow: "#5A-2-img-low",
+      srcHd:  "5A-2.jpg",
+      mapPos: {x: 90, y: 75},
+      isDestination: false,
+      neighbors: [
+        {id: "5A-1", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "5A-3", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "5A-3": {
+      id: "5A-3",
+      title: "5A-3",
+      type: "image",
+      srcLow: "#5A-3-img-low",
+      srcHd:  "5A-3.jpg",
+      mapPos: {x: 60, y: 75},
+      isDestination: false,
+      neighbors: [
+        {id: "5A-2", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "6A-0", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "6-0": {
+      id: "6-0",
+      title: "Medical Clinic",
+      type: "image",
+      srcLow: "#6-0-img-low",
+      srcHd:  "6-0Ubat.jpg",
+      mapPos: {x: 160, y: 120},
+      isDestination: true,
+      neighbors: [
+        {id: "5-2", yaw: 170, pitch: 15, jauh: 5.5}
+      ]
+    },
+    "6A-0": {
+      id: "6A-0",
+      title: "Pharmacy 2",
+      type: "image",
+      srcLow: "#6A-0-img-low",
+      srcHd:  "6A-0FarmasiPakar.jpg",
+      mapPos: {x: 50, y: 75},
+      isDestination: true,
+      neighbors: [
+        {id: "5A-3", yaw: 170, pitch: 15, jauh: 5.5},
+        {id: "1-3", yaw: -10, pitch: 15, jauh: 5.5}
+      ]
+    }
+  };
 
-  "Receptionist": {
-    id: "Receptionist",
-    title: "Receptionist",
-    type: "image",
-    srcLow: "#Recep-img-low",
-    srcHd:  "test2.jpg",
-    mapPos: {x: 50, y: 140},
-    isDestination: true,
-    neighbors: [
-      {id: "lobby", yaw: -1, pitch: 0, jauh: 5.3, use3DSign: true, useHotspot: false},
-      {id: "Kaunter Bayaran", yaw: 130, pitch: 10, jauh: 5.5, use3DSign: true, useHotspot: false}
-    ]
-  },
-
-  "Kaunter Bayaran": {
-    id: "Kaunter Bayaran",
-    title: "Kaunter Bayaran",
-    type: "image",
-    srcLow: "#Bayaran-img-low",
-    srcHd:  "1-1Kaunter.jpg",
-    mapPos: {x: 50, y: 120},
-    isDestination: true,
-    neighbors: [
-      {id: "Receptionist", yaw: 108, pitch: 10, jauh: 5.5, use3DSign: true, useHotspot: false},
-      {id: "lobby", yaw: 155, pitch: 12.5, jauh: 5.5, use3DSign: true, useHotspot: false}
-    ]
-  },
-
-  "1-2": {
-    id: "1-2",
-    title: "Hall 1",
-    type: "image",
-    srcLow: "#1-2-img-low",
-    srcHd:  "1-2.jpg",
-    mapPos: {x: 15, y: 110},
-    isDestination: false,
-    neighbors: [
-      {id: "lobby", yaw: 173, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "1-3", yaw: -5, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "1-3": {
-    id: "1-3",
-    title: "Hall 2",
-    type: "image",
-    srcLow: "#1-3-img-low",
-    srcHd:  "1-3.jpg",
-    mapPos: {x: 15, y: 80},
-    isDestination: false,
-    neighbors: [
-      {id: "1-2", yaw: 180, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "1-4", yaw: 20, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "6A-0", yaw: 20, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "1-4": {
-    id: "1-4",
-    title: "Hall 3",
-    type: "image",
-    srcLow: "#1-4-img-low",
-    srcHd:  "1-4.jpg",
-    mapPos: {x: 15, y: 50},
-    isDestination: false,
-    neighbors: [
-      {id: "1-3", yaw: 125, pitch: 10, jauh: 4.5, use3DSign: false, useHotspot: true},
-      {id: "1-5", yaw: 1, pitch: 18, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "1-5": {
-    id: "1-5",
-    title: "Hall 4",
-    type: "image",
-    srcLow: "#1-5-img-low",
-    srcHd:  "1-5.jpg",
-    mapPos: {x: 15, y: 20},
-    isDestination: false,
-    neighbors: [
-      {id: "1-4", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "Farmasi", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "Farmasi": {
-    id: "Farmasi",
-    title: "Pharmacy",
-    type: "image",
-    srcLow: "#Farmasi-img-low",
-    srcHd:  "2-0Farmasi.jpg",
-    mapPos: {x: 50, y: 20},
-    isDestination: true,
-    neighbors: [
-      {id: "1-5", yaw: 181, pitch: 10, jauh: 4.5, use3DSign: false, useHotspot: true},
-      {id: "2-1", yaw: 1, pitch: 12, jauh: 5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "2-1": {
-    id: "2-1",
-    title: "2-1",
-    type: "image",
-    srcLow: "#2-1-img-low",
-    srcHd:  "2-1.jpg",
-    mapPos: {x: 70, y: 20},
-    isDestination: false,
-    neighbors: [
-      {id: "Farmasi", yaw: -130, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "2-2", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "2-2": {
-    id: "2-2",
-    title: "2-2",
-    type: "image",
-    srcLow: "#2-2-img-low",
-    srcHd:  "2-2.jpg",
-    mapPos: {x: 90, y: 20},
-    isDestination: false,
-    neighbors: [
-      {id: "2-1", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "3-0", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "3-0": {
-    id: "3-0",
-    title: "Ortho",
-    type: "image",
-    srcLow: "#3-0-img-low",
-    srcHd:  "3-0Ortho.jpg",
-    mapPos: {x: 110, y: 20},
-    isDestination: true,
-    neighbors: [
-      {id: "2-2", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "3-1", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "3-1": {
-    id: "3-1",
-    title: "3-1",
-    type: "image",
-    srcLow: "#3-1-img-low",
-    srcHd:  "3-1.jpg",
-    mapPos: {x: 135, y: 20},
-    isDestination: false,
-    neighbors: [
-      {id: "3-0", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "4-0", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "4-0": {
-    id: "4-0",
-    title: "Ofta",
-    type: "image",
-    srcLow: "#4-0-img-low",
-    srcHd:  "4-0Ofta.jpg",
-    mapPos: {x: 160, y: 20},
-    isDestination: true,
-    neighbors: [
-      {id: "3-1", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "5-0", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "5-0": {
-    id: "5-0",
-    title: "Darah",
-    type: "image",
-    srcLow: "#5-0-img-low",
-    srcHd:  "5-0Darah.jpg",
-    mapPos: {x: 160, y: 50},
-    isDestination: true,
-    neighbors: [
-      {id: "4-0", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "5-1", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "5-1": {
-    id: "5-1",
-    title: "5-1",
-    type: "image",
-    srcLow: "#5-1-img-low",
-    srcHd:  "5-1.jpg",
-    mapPos: {x: 160, y: 75},
-    isDestination: false,
-    neighbors: [
-      {id: "5-0", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "5-2", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "5-2": {
-    id: "5-2",
-    title: "5-2",
-    type: "image",
-    srcLow: "#5-2-img-low",
-    srcHd:  "5-2.jpg",
-    mapPos: {x: 160, y: 90},
-    isDestination: false,
-    neighbors: [
-      {id: "5-1", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "6-0", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "5A-1": {
-    id: "5A-1",
-    title: "5A-1",
-    type: "image",
-    srcLow: "#5A-1-img-low",
-    srcHd:  "5A-1.jpg",
-    mapPos: {x: 125, y: 75},
-    isDestination: false,
-    neighbors: [
-      {id: "5-1", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "5A-2", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "5A-2": {
-    id: "5A-2",
-    title: "5A-2",
-    type: "image",
-    srcLow: "#5A-2-img-low",
-    srcHd:  "5A-2.jpg",
-    mapPos: {x: 90, y: 75},
-    isDestination: false,
-    neighbors: [
-      {id: "5A-1", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "5A-3", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "5A-3": {
-    id: "5A-3",
-    title: "5A-3",
-    type: "image",
-    srcLow: "#5A-3-img-low",
-    srcHd:  "5A-3.jpg",
-    mapPos: {x: 60, y: 75},
-    isDestination: false,
-    neighbors: [
-      {id: "5A-2", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "6A-0", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "6-0": {
-    id: "6-0",
-    title: "Medical Clinic",
-    type: "image",
-    srcLow: "#6-0-img-low",
-    srcHd:  "6-0Ubat.jpg",
-    mapPos: {x: 160, y: 120},
-    isDestination: true,
-    neighbors: [
-      {id: "5-2", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  },
-
-  "6A-0": {
-    id: "6A-0",
-    title: "Pharmacy 2",
-    type: "image",
-    srcLow: "#6A-0-img-low",
-    srcHd:  "6A-0FarmasiPakar.jpg",
-    mapPos: {x: 50, y: 75},
-    isDestination: true,
-    neighbors: [
-      {id: "5A-3", yaw: 170, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true},
-      {id: "1-3", yaw: -10, pitch: 15, jauh: 5.5, use3DSign: false, useHotspot: true}
-    ]
-  }
-};
-
-
-  let sky, hotspotsContainer, signsContainer, pathLinesContainer, loader, statusEl, locationLabel, miniMapGroup;
+  let sky, hotspotsContainer, pathLinesContainer, loader, statusEl, locationLabel, miniMapGroup;
   let currentNodeId = null;
   let isTransitioning = false;
-  let debugMode = false;
-  let editMode = false;
-  let showSigns = true;
-  let lastClickedYaw = 0;
-  let lastClickedPitch = 0;
-  let journeyInProgress = false;
   let plannedRoute = [];
   let routeStartNode = null;
   let routeEndNode = null;
   let routeMapNodes = null;
   let routeMapLines = null;
+
+  const hdCache = new Map();
 
   function sphericalToCartesian(yawDeg, pitchDeg, radius) {
     radius = radius || 3;
@@ -1060,127 +951,56 @@ const nodes = {
     return {x:x, y:y, z:z};
   }
 
-const hdCache = new Map();
+  function setSkyWithProgressive(lowSrcSelector, hdUrl) {
+    sky.setAttribute('src', lowSrcSelector);
+    if (!hdUrl) return;
 
-function setSkyWithProgressive(lowSrcSelector, hdUrl) {
-  // Show low immediately
-  sky.setAttribute('src', lowSrcSelector);
+    const cached = hdCache.get(hdUrl);
+    if (cached && cached.complete) {
+      sky.setAttribute('src', hdUrl);
+      return;
+    }
 
-  // Preload HD (by URL) then swap
-  if (!hdUrl) return;
+    const img = cached || new Image();
+    img.crossOrigin = "anonymous";
+    img.decoding = "async";
+    img.loading = "eager";
+    img.src = hdUrl;
+    hdCache.set(hdUrl, img);
 
-  // If already cached & loaded, swap instantly
-  const cached = hdCache.get(hdUrl);
-  if (cached && cached.complete) {
-    sky.setAttribute('src', hdUrl); // A-Frame accepts URL directly
-    return;
-  }
-
-  // Start loading
-  const img = cached || new Image();
-  img.crossOrigin = "anonymous";
-  img.decoding = "async";
-  img.loading = "eager";
-  img.src = hdUrl;
-  hdCache.set(hdUrl, img);
-
-  img.addEventListener('load', function onLoad() {
-    img.removeEventListener('load', onLoad);
-    // Swap to HD once actually loaded
-    sky.setAttribute('src', hdUrl);
-  });
-}
-
-
-
-  // Create 3D directional sign with arrow
-  function create3DSign(neighbor, targetNode) {
-    const pos = sphericalToCartesian(neighbor.yaw || 0, (neighbor.pitch || 0), neighbor.jauh);
-    
-    // Container for the sign
-    const signGroup = document.createElement('a-entity');
-    signGroup.setAttribute('position', pos.x + ' ' + pos.y + ' ' + pos.z);
-    signGroup.setAttribute('rotation', '0 ' + (-neighbor.yaw) + ' 0');
-    signGroup.setAttribute('class', 'sign-group');
-    signGroup.setAttribute('data-target', neighbor.id);
-    
-    // Sign board (panel background)
-    const board = document.createElement('a-entity');
-    board.setAttribute('geometry', 'primitive: box; width: 0.8; height: 0.3; depth: 0.05');
-    board.setAttribute('material', 'color: #0b74de; shader: flat; opacity: 0.95');
-    board.setAttribute('class', 'sign-clickable clickable');
-    signGroup.appendChild(board);
-    
-    // Text label on sign
-    const text = document.createElement('a-entity');
-    text.setAttribute('text', 'value: ' + targetNode.title + '; align: center; width: 1.5; color: #ffffff');
-    text.setAttribute('position', '0 0.05 0.03');
-    signGroup.appendChild(text);
-    
-    // Arrow icon (using cone primitive)
-    const arrow = document.createElement('a-entity');
-    arrow.setAttribute('geometry', 'primitive: cone; radiusBottom: 0.08; radiusTop: 0; height: 0.18');
-    arrow.setAttribute('material', 'color: #ffd166; shader: flat');
-    arrow.setAttribute('position', '0 -0.08 0.03');
-    arrow.setAttribute('rotation', '0 0 180');
-    arrow.setAttribute('animation__bob', 'property: position; to: 0 -0.12 0.03; dir: alternate; dur: 1000; loop: true; easing: easeInOutSine');
-    signGroup.appendChild(arrow);
-    
-    // Pole/stand
-    const pole = document.createElement('a-entity');
-    pole.setAttribute('geometry', 'primitive: cylinder; radius: 0.02; height: 0.4');
-    pole.setAttribute('material', 'color: #1e293b; shader: flat');
-    pole.setAttribute('position', '0 -0.35 0');
-    signGroup.appendChild(pole);
-    
-    // Add dashed line from camera to sign
-    const lineEnt = document.createElement('a-entity');
-    lineEnt.setAttribute('dashed-line', {
-      start: { x: 0, y: -1.6, z: 0 },
-      end:   { x: pos.x, y: pos.y -0.6, z: pos.z },
-      color: '#ffd166',
-      dashLen: 0.15,
-      gapLen: 0.2,
-      radius: 0.05,
-      opacity: 0.00
+    img.addEventListener('load', function onLoad() {
+      img.removeEventListener('load', onLoad);
+      sky.setAttribute('src', hdUrl);
     });
-    pathLinesContainer.appendChild(lineEnt);
-    
-    // Make clickable
-    signGroup.addEventListener('click', function() {
-      if(!editMode) goToNode(neighbor.id);
-    });
-    
-    return signGroup;
   }
 
   function buildMiniMap() {
-    console.log('Building mini map...');
     miniMapGroup.innerHTML = '';
     Object.values(nodes).forEach(function(node) {
       if (node.isDestination) {
-      const cx = node.mapPos.x || 20;
-      const cy = node.mapPos.y || 50;
-      const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
-      circle.setAttribute('cx', cx);
-      circle.setAttribute('cy', cy);
-      circle.setAttribute('r', 6);
-      circle.setAttribute('fill', '#94a3b8');
-      circle.setAttribute('data-node', node.id);
-      circle.setAttribute('style','cursor:pointer');
-      circle.addEventListener('click', function() {
-        if(currentNodeId !== node.id) goToNode(node.id);
-      });
-      miniMapGroup.appendChild(circle);
-      
-      const txt = document.createElementNS("http://www.w3.org/2000/svg","text");
-      txt.setAttribute('x', cx + 10); 
-      txt.setAttribute('y', cy + 4);
-      txt.setAttribute('font-size', 8); 
-      txt.setAttribute('fill', '#cbd5e1');
-      txt.textContent = node.title.split(' ')[0];
-      miniMapGroup.appendChild(txt);
-    }});
+        const cx = node.mapPos.x || 20;
+        const cy = node.mapPos.y || 50;
+        const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', 6);
+        circle.setAttribute('fill', '#94a3b8');
+        circle.setAttribute('data-node', node.id);
+        circle.setAttribute('style','cursor:pointer');
+        circle.addEventListener('click', function() {
+          if(currentNodeId !== node.id) goToNode(node.id);
+        });
+        miniMapGroup.appendChild(circle);
+        
+        const txt = document.createElementNS("http://www.w3.org/2000/svg","text");
+        txt.setAttribute('x', cx + 10); 
+        txt.setAttribute('y', cy + 4);
+        txt.setAttribute('font-size', 8); 
+        txt.setAttribute('fill', '#cbd5e1');
+        txt.textContent = node.title.split(' ')[0];
+        miniMapGroup.appendChild(txt);
+      }
+    });
   }
 
   function updateMiniMapActive(nodeId){
@@ -1193,73 +1013,62 @@ function setSkyWithProgressive(lowSrcSelector, hdUrl) {
   }
 
   function createNavigationForNode(node){
-    console.log('Creating navigation for node:', node.id, 'with', node.neighbors.length, 'neighbors');
-    
-    // Clear existing
     hotspotsContainer.innerHTML = '';
-    signsContainer.innerHTML = '';
     pathLinesContainer.innerHTML = '';
     
-    let signsCreated = 0;
-    let hotspotsCreated = 0;
+    // Check if current node is part of planned route
+    const currentRouteIndex = plannedRoute.indexOf(node.id);
+    const isOnRoute = currentRouteIndex !== -1;
     
     node.neighbors.forEach(function(n) {
       const targetNode = nodes[n.id];
-      if(!targetNode) {
-        console.warn('Target node not found:', n.id);
-        return;
-      }
+      if(!targetNode) return;
       
-      // Create 3D sign if enabled
-      if((n.use3DSign !== false) && showSigns) {
-        const sign = create3DSign(n, targetNode);
-        signsContainer.appendChild(sign);
-        signsCreated++;
-      }
+      // Determine if this neighbor is the next step in the planned route
+      const isNextInRoute = isOnRoute && 
+                           currentRouteIndex < plannedRoute.length - 1 && 
+                           plannedRoute[currentRouteIndex + 1] === n.id;
       
-      // Create hotspot ring if enabled
-      if(n.useHotspot !== false) {
-        const pos = sphericalToCartesian(n.yaw || 0, n.pitch || 0, n.jauh);
-        const ent = document.createElement('a-entity');
-        ent.setAttribute('geometry','primitive: ring; radiusInner: 0.15; radiusOuter: 0.25');
-        ent.setAttribute('material','color: #ffd166; shader: flat; opacity: 0.52');
-        ent.setAttribute('position', pos.x + ' ' + pos.y + ' ' + pos.z);
-        ent.setAttribute('rotation', '0 ' + (-n.yaw) + ' 0');
-        ent.setAttribute('class', 'hotspot clickable');
-        ent.setAttribute('animation__pulse', 'property: scale; dir: alternate; dur: 900; loop: true; to: 1.15 1.15 1.15; easing: easeInOutSine');
-        ent.setAttribute('data-target', n.id);
+      const pos = sphericalToCartesian(n.yaw || 0, n.pitch || 0, n.jauh);
+      const ent = document.createElement('a-entity');
+      ent.setAttribute('geometry','primitive: ring; radiusInner: 0.15; radiusOuter: 0.25');
+      
+      // Highlight route hotspots in gold, others in default yellow
+      const hotspotColor = isNextInRoute ? '#fbbf24' : '#ffd166';
+      ent.setAttribute('material','color: ' + hotspotColor + '; shader: flat; opacity: 0.7');
+      ent.setAttribute('position', pos.x + ' ' + pos.y + ' ' + pos.z);
+      ent.setAttribute('rotation', '0 ' + (-n.yaw) + ' 0');
+      ent.setAttribute('class', 'hotspot clickable');
+      ent.setAttribute('animation__pulse', 'property: scale; dir: alternate; dur: 900; loop: true; to: 1.15 1.15 1.15; easing: easeInOutSine');
+      ent.setAttribute('data-target', n.id);
 
-        const txt = document.createElement('a-entity');
-        txt.setAttribute('text', 'value: ' + targetNode.title + '; align: center; width: 2.4; color: #e6eef6');
-        txt.setAttribute('position','0 -0.28 0');
+      const txt = document.createElement('a-entity');
+      txt.setAttribute('text', 'value: ' + targetNode.title + '; align: center; width: 2.4; color: #e6eef6');
+      txt.setAttribute('position','0 -0.28 0');
+      ent.appendChild(txt);
 
-        ent.appendChild(txt);
+      ent.addEventListener('click', function(e) {
+        const target = e.currentTarget.getAttribute('data-target');
+        if(target) goToNode(target);
+      });
 
-        ent.addEventListener('click', function(e) {
-          const target = e.currentTarget.getAttribute('data-target');
-          if(target && !editMode) goToNode(target);
-        });
+      hotspotsContainer.appendChild(ent);
 
-        hotspotsContainer.appendChild(ent);
-
-        // Dashed line from user (camera) to hotspot
+      // Only show dashed lines for route navigation
+      if (isNextInRoute) {
         const lineEnt = document.createElement('a-entity');
         lineEnt.setAttribute('dashed-line', {
           start: { x: 0, y: -1.6, z: 0 },
           end:   { x: pos.x, y: pos.y-0.5, z: pos.z },
-          color: '#ffd166',
+          color: '#fbbf24',
           dashLen: 0.15,
           gapLen: 0.2,
           radius: 0.05,
-          opacity: 0.5
+          opacity: 0.8
         });
         pathLinesContainer.appendChild(lineEnt);
-
-        hotspotsCreated++;
       }
     });
-    
-    console.log('Created', signsCreated, '3D signs and', hotspotsCreated, 'hotspots');
   }
 
   function showLoader(show){
@@ -1271,35 +1080,37 @@ function setSkyWithProgressive(lowSrcSelector, hdUrl) {
     if(isTransitioning) return;
     const node = nodes[nodeId];
     if(!node) {
-      console.warn('Unknown node', nodeId); 
       statusEl.innerHTML = '<span class="error">Node not found!</span>';
       return;
     }
     
-    console.log('Going to node:', nodeId);
     isTransitioning = true;
     showLoader(true);
     statusEl.textContent = 'Loading ' + node.title + '…';
     
     setTimeout(function() {
       try {
-        setSkyWithProgressive(node.srcLow, node.srcHd);;
+        setSkyWithProgressive(node.srcLow, node.srcHd);
         createNavigationForNode(node);
         
         currentNodeId = nodeId;
         locationLabel.textContent = node.title + ' — 360° image';
-        statusEl.textContent = 'Viewing: ' + node.title;
+        
+        // Update status based on route progress
+        if (plannedRoute.length > 0) {
+          const currentIndex = plannedRoute.indexOf(nodeId);
+          if (currentIndex === plannedRoute.length - 1) {
+            statusEl.textContent = '✓ Arrived at ' + node.title;
+          } else if (currentIndex !== -1) {
+            statusEl.textContent = 'Step ' + (currentIndex + 1) + '/' + plannedRoute.length + ': ' + node.title;
+          } else {
+            statusEl.textContent = 'Viewing: ' + node.title;
+          }
+        } else {
+          statusEl.textContent = 'Viewing: ' + node.title;
+        }
+        
         updateMiniMapActive(nodeId);
-        
-        if(editMode) {
-          populateTargetSelect();
-          updateHotspotList();
-        }
-        
-        if(debugMode) {
-          console.log('Loaded node:', nodeId, 'with', node.neighbors.length, 'neighbors');
-        }
-
       } catch(e){
         console.error('Error loading node:', e);
         statusEl.innerHTML = '<span class="error">Error: ' + e.message + '</span>';
@@ -1307,10 +1118,9 @@ function setSkyWithProgressive(lowSrcSelector, hdUrl) {
         showLoader(false);
         isTransitioning = false;
       }
-    });
+    }, 300);
   }
 
-  // Find shortest path between two nodes using BFS
   function findPath(startId, endId) {
     if (startId === endId) return [startId];
     
@@ -1339,47 +1149,6 @@ function setSkyWithProgressive(lowSrcSelector, hdUrl) {
     return null;
   }
 
-  // Start guided journey along planned route
-  function startGuidedJourney() {
-    if (journeyInProgress) {
-      statusEl.textContent = "Journey already in progress…";
-      return;
-    }
-    
-    if (!plannedRoute || plannedRoute.length === 0) {
-      statusEl.innerHTML = '<span class="error">No route planned!</span>';
-      return;
-    }
-    
-    journeyInProgress = true;
-    const dwellTime = 1800;
-    let index = 0;
-    
-    function step() {
-      const nodeId = plannedRoute[index];
-      
-      if (index === 0 && currentNodeId === nodeId) {
-        statusEl.textContent = "Starting journey to " + nodes[routeEndNode].title;
-      } else {
-        goToNode(nodeId);
-      }
-      
-      if (index < plannedRoute.length - 1) {
-        statusEl.textContent = "Step " + (index + 1) + "/" + plannedRoute.length + ": " + nodes[nodeId].title;
-      } else {
-        statusEl.textContent = "✓ Arrived at " + nodes[nodeId].title;
-        journeyInProgress = false;
-        return;
-      }
-      
-      index++;
-      setTimeout(step, dwellTime);
-    }
-    
-    step();
-  }
-
-  // Populate route modal selects
   function populateRouteSelects() {
     const startSelect = document.getElementById('startLocation');
     const endSelect = document.getElementById('endLocation');
@@ -1387,18 +1156,13 @@ function setSkyWithProgressive(lowSrcSelector, hdUrl) {
     startSelect.innerHTML = '<option value="">-- Choose where you are now --</option>';
     endSelect.innerHTML = '<option value="">-- Choose where you want to go --</option>';
     
-    // Add all nodes to start location, but only destinations to end location
     Object.values(nodes).forEach(function(node) {
-      // All nodes can be starting points
       if (node.isDestination) {
-      const startOpt = document.createElement('option');
-      startOpt.value = node.id;
-      startOpt.textContent = node.title;
-      startSelect.appendChild(startOpt);
-      }
-      
-      // Only destination nodes can be end points
-      if (node.isDestination) {
+        const startOpt = document.createElement('option');
+        startOpt.value = node.id;
+        startOpt.textContent = node.title;
+        startSelect.appendChild(startOpt);
+        
         const endOpt = document.createElement('option');
         endOpt.value = node.id;
         endOpt.textContent = node.title;
@@ -1407,40 +1171,33 @@ function setSkyWithProgressive(lowSrcSelector, hdUrl) {
     });
   }
 
-  // Show route modal
-function showRouteModal() {
-  const modal = document.getElementById('routeModal');
-  populateRouteSelects();
-  buildRouteMap();
+  function showRouteModal() {
+    const modal = document.getElementById('routeModal');
+    populateRouteSelects();
+    buildRouteMap();
 
-  // Always sync indicator to current sceneReady state
-  const loadingIndicator = document.getElementById('sceneLoadingIndicator');
-  if (loadingIndicator) {
-    loadingIndicator.classList.toggle('show', !window.sceneReady);
+    const loadingIndicator = document.getElementById('sceneLoadingIndicator');
+    if (loadingIndicator) {
+      loadingIndicator.classList.toggle('show', !window.sceneReady);
+    }
+
+    modal.classList.add('show');
   }
 
-  modal.classList.add('show');
-}
-
-  // Hide route modal
   function hideRouteModal() {
     const modal = document.getElementById('routeModal');
     modal.classList.remove('show');
   }
 
-  // Toggle mini map
   function toggleMiniMap() {
     const mapPanel = document.getElementById('mapPanel');
     mapPanel.classList.toggle('collapsed');
   }
 
-  // Build route preview map in modal
   function buildRouteMap() {
-    console.log('Building route preview map...');
     routeMapNodes.innerHTML = '';
     routeMapLines.innerHTML = '';
     
-    // Draw all destination nodes
     Object.values(nodes).forEach(function(node) {
       if (node.isDestination) {
         const cx = node.mapPos.x || 20;
@@ -1454,7 +1211,6 @@ function showRouteModal() {
         circle.setAttribute('data-node', node.id);
         routeMapNodes.appendChild(circle);
         
-        // Add labels
         const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
         txt.setAttribute('x', cx + 8);
         txt.setAttribute('y', cy + 3);
@@ -1466,9 +1222,7 @@ function showRouteModal() {
     });
   }
 
-  // Update route map based on selections
   function updateRouteMap(startId, endId, path) {
-    // Reset all nodes to default
     const circles = routeMapNodes.querySelectorAll('circle');
     circles.forEach(function(c) {
       c.setAttribute('fill', '#64748b');
@@ -1476,10 +1230,8 @@ function showRouteModal() {
       c.setAttribute('r', 5);
     });
     
-    // Clear route lines
     routeMapLines.innerHTML = '';
     
-    // Highlight start node (green)
     if (startId) {
       const startCircle = routeMapNodes.querySelector('[data-node="' + startId + '"]');
       if (startCircle) {
@@ -1489,7 +1241,6 @@ function showRouteModal() {
       }
     }
     
-    // Highlight end node (blue)
     if (endId) {
       const endCircle = routeMapNodes.querySelector('[data-node="' + endId + '"]');
       if (endCircle) {
@@ -1499,7 +1250,6 @@ function showRouteModal() {
       }
     }
     
-    // Draw route path if exists
     if (path && path.length > 1) {
       for (let i = 0; i < path.length - 1; i++) {
         const fromNode = nodes[path[i]];
@@ -1524,12 +1274,10 @@ function showRouteModal() {
         }
       }
       
-      // Add animated dots along the path
       const animDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       animDot.setAttribute('r', 3);
       animDot.setAttribute('fill', '#fbbf24');
       
-      // Create path for animation
       let pathD = '';
       for (let i = 0; i < path.length; i++) {
         const node = nodes[path[i]];
@@ -1559,7 +1307,6 @@ function showRouteModal() {
     }
   }
 
-  // Handle route selection
   function updateRouteInfo() {
     const startSelect = document.getElementById('startLocation');
     const endSelect = document.getElementById('endLocation');
@@ -1570,7 +1317,6 @@ function showRouteModal() {
     const startId = startSelect.value;
     const endId = endSelect.value;
     
-    // Update map visualization based on current selections
     if (startId || endId) {
       const path = (startId && endId) ? findPath(startId, endId) : null;
       updateRouteMap(startId, endId, path);
@@ -1607,221 +1353,9 @@ function showRouteModal() {
     }
   }
 
-  function toggleDebug(){
-    debugMode = !debugMode;
-    const hotspots = document.querySelectorAll('.hotspot');
-    hotspots.forEach(function(h) {
-      if(debugMode){
-        h.setAttribute('material', 'color: #ef4444; opacity: 0.8');
-      } else {
-        h.setAttribute('material', 'color: #ffd166; opacity: 0.92');
-      }
-    });
-    
-    const signs = document.querySelectorAll('.sign-clickable');
-    signs.forEach(function(s) {
-      if(debugMode){
-        s.setAttribute('material', 'color: #ef4444; opacity: 0.9');
-      } else {
-        s.setAttribute('material', 'color: #0b74de; opacity: 0.95');
-      }
-    });
-    
-    statusEl.textContent = debugMode ? 'Debug mode ON' : 'Debug mode OFF';
-    console.log('Debug mode:', debugMode);
-  }
-
-  function toggleSigns(){
-    showSigns = !showSigns;
-    const btn = document.getElementById('btn-toggle-signs');
-    btn.style.background = showSigns ? '' : '#dc2626';
-    
-    if(currentNodeId) {
-      createNavigationForNode(nodes[currentNodeId]);
-    }
-    
-    statusEl.textContent = showSigns ? '3D Signs visible' : '3D Signs hidden';
-    console.log('Signs visibility:', showSigns);
-  }
-
-  // Edit Mode Functions
-  function toggleEditMode(){
-    editMode = !editMode;
-    const panel = document.getElementById('editPanel');
-    const btn = document.getElementById('btn-edit-mode');
-    
-    if(editMode){
-      panel.style.display = 'block';
-      btn.style.background = '#059669';
-      populateTargetSelect();
-      updateHotspotList();
-      enableSceneClicking();
-      statusEl.textContent = 'Edit Mode: Click in view to place navigation points';
-    } else {
-      panel.style.display = 'none';
-      btn.style.background = '';
-      disableSceneClicking();
-      statusEl.textContent = 'Edit mode OFF';
-    }
-    console.log('Edit mode:', editMode);
-  }
-
-  function populateTargetSelect(){
-    const select = document.getElementById('targetSelect');
-    select.innerHTML = '<option value="">-- Select destination --</option>';
-    
-    Object.values(nodes).forEach(function(node) {
-      if(node.id !== currentNodeId){
-        const opt = document.createElement('option');
-        opt.value = node.id;
-        opt.textContent = node.title;
-        select.appendChild(opt);
-      }
-    });
-  }
-
-  function enableSceneClicking(){
-    const scene = document.querySelector('a-scene');
-    scene.addEventListener('click', handleSceneClick);
-  }
-
-  function disableSceneClicking(){
-    const scene = document.querySelector('a-scene');
-    scene.removeEventListener('click', handleSceneClick);
-  }
-
-  function handleSceneClick(event){
-    if(!editMode) return;
-    
-    const camera = document.querySelector('#camera');
-    const rotation = camera.getAttribute('rotation');
-    
-    lastClickedYaw = rotation.y;
-    lastClickedPitch = rotation.x;
-    
-    const info = document.getElementById('clickInfo');
-    info.innerHTML = 'Yaw: <strong>' + lastClickedYaw.toFixed(1) + '°</strong><br>Pitch: <strong>' + lastClickedPitch.toFixed(1) + '°</strong>';
-    
-    const targetSelect = document.getElementById('targetSelect');
-    const addBtn = document.getElementById('btn-add-hotspot');
-    addBtn.disabled = !targetSelect.value;
-    
-    createTemporaryMarker(lastClickedYaw, lastClickedPitch);
-  }
-
-  function createTemporaryMarker(yaw, pitch){
-    const existing = document.querySelector('.temp-marker');
-    if(existing) existing.remove();
-    
-    const pos = sphericalToCartesian(yaw, pitch, 2.7);
-    const marker = document.createElement('a-entity');
-    marker.setAttribute('class', 'temp-marker');
-    marker.setAttribute('geometry', 'primitive: sphere; radius: 0.1');
-    marker.setAttribute('material', 'color: #10b981; shader: flat; opacity: 0.8');
-    marker.setAttribute('position', pos.x + ' ' + pos.y + ' ' + pos.z);
-    marker.setAttribute('animation', 'property: scale; to: 1.3 1.3 1.3; dir: alternate; loop: true; dur: 500');
-    
-    hotspotsContainer.appendChild(marker);
-  }
-
-  function addHotspot(){
-    const targetSelect = document.getElementById('targetSelect');
-    const targetId = targetSelect.value;
-    
-    if(!targetId || !currentNodeId) return;
-    
-    const use3DSign = document.getElementById('use3DSign').checked;
-    const useHotspot = document.getElementById('useHotspot').checked;
-    
-    const currentNode = nodes[currentNodeId];
-    const existingIndex = currentNode.neighbors.findIndex(function(n) { return n.id === targetId; });
-    
-    if(existingIndex >= 0){
-      currentNode.neighbors[existingIndex] = {
-        id: targetId,
-        yaw: lastClickedYaw,
-        pitch: lastClickedPitch,
-        use3DSign: use3DSign,
-        useHotspot: useHotspot
-      };
-      statusEl.textContent = 'Updated navigation point to ' + nodes[targetId].title;
-    } else {
-      currentNode.neighbors.push({
-        id: targetId,
-        yaw: lastClickedYaw,
-        pitch: lastClickedPitch,
-        use3DSign: use3DSign,
-        useHotspot: useHotspot
-      });
-      statusEl.textContent = 'Added navigation point to ' + nodes[targetId].title;
-    }
-    
-    createNavigationForNode(currentNode);
-    updateHotspotList();
-    
-    const temp = document.querySelector('.temp-marker');
-    if(temp) temp.remove();
-    
-    targetSelect.value = '';
-    document.getElementById('btn-add-hotspot').disabled = true;
-    document.getElementById('clickInfo').textContent = 'Click in view to place next point';
-  }
-
-  function removeHotspot(targetId){
-    const currentNode = nodes[currentNodeId];
-    currentNode.neighbors = currentNode.neighbors.filter(function(n) { return n.id !== targetId; });
-    
-    createNavigationForNode(currentNode);
-    updateHotspotList();
-    statusEl.textContent = 'Removed navigation point';
-  }
-
-  function updateHotspotList(){
-    const list = document.getElementById('hotspotList');
-    const currentNode = nodes[currentNodeId];
-    
-    if(!currentNode || currentNode.neighbors.length === 0){
-      list.innerHTML = '<div style="font-size:11px;color:#64748b;padding:8px">No navigation points yet</div>';
-      return;
-    }
-    
-    list.innerHTML = '';
-    currentNode.neighbors.forEach(function(n) {
-      const item = document.createElement('div');
-      item.className = 'hotspot-item';
-      const signType = (n.use3DSign ? '🏷️' : '') + (n.useHotspot ? '⭕' : '');
-      item.innerHTML = '<div><strong>' + nodes[n.id].title + '</strong> ' + signType + '<br>' +
-        '<span style="color:#94a3b8">Yaw: ' + n.yaw.toFixed(1) + '° | Pitch: ' + n.pitch.toFixed(1) + '°</span></div>' +
-        '<button class="btn-remove" onclick="window.appRemoveHotspot(\'' + n.id + '\')">Remove</button>';
-      list.appendChild(item);
-    });
-  }
-
-  function exportConfig(){
-    const config = JSON.stringify(nodes, null, 2);
-    
-    const blob = new Blob([config], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'uitm-hospital-config.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    
-    statusEl.textContent = 'Configuration exported!';
-    
-    console.log('=== CONFIGURATION ===');
-    console.log(config);
-    console.log('===================');
-  }
-
   function init(){
-    console.log('Initializing app...');
-    
-    // Initialize DOM references
     sky = document.querySelector('#sky');
     hotspotsContainer = document.querySelector('#hotspots');
-    signsContainer = document.querySelector('#signs');
     pathLinesContainer = document.querySelector('#pathlines');
     loader = document.getElementById('loader');
     statusEl = document.getElementById('status');
@@ -1830,131 +1364,73 @@ function showRouteModal() {
     routeMapNodes = document.querySelector('#routeMapNodes');
     routeMapLines = document.querySelector('#routeMapLines');
     
-    console.log('DOM elements found:', {
-      sky: !!sky,
-      hotspotsContainer: !!hotspotsContainer,
-      signsContainer: !!signsContainer,
-      loader: !!loader,
-      statusEl: !!statusEl,
-      locationLabel: !!locationLabel,
-      miniMapGroup: !!miniMapGroup,
-      routeMapNodes: !!routeMapNodes,
-      routeMapLines: !!routeMapLines
-    });
-    
-    // Build mini map
     buildMiniMap();
-    console.log('Mini map built');
-    
-    // SHOW ROUTE MODAL IMMEDIATELY - Don't wait for scene
-    console.log('Showing route modal immediately...');
     showRouteModal();
     
-    // Bind UI buttons
     document.getElementById('btn-plan-route').addEventListener('click', showRouteModal);
     document.getElementById('mapToggle').addEventListener('click', toggleMiniMap);
     
-    // Route modal buttons
     document.getElementById('startLocation').addEventListener('change', updateRouteInfo);
     document.getElementById('endLocation').addEventListener('change', updateRouteInfo);
     
     document.getElementById('btn-start-route').addEventListener('click', function() {
       hideRouteModal();
       if (plannedRoute && plannedRoute.length > 0) {
-        // Show loader while waiting for scene
         showLoader(true);
-        statusEl.textContent = 'Preparing navigation...';
+        statusEl.textContent = 'Starting route navigation...';
         
-        // Wait for scene to be ready before starting navigation
         waitForSceneReady(function() {
           goToNode(plannedRoute[0]);
-          setTimeout(function() {
-            startGuidedJourney();
-          }, 1000);
         });
       }
     });
     
     document.getElementById('btn-skip-route').addEventListener('click', function() {
       hideRouteModal();
+      plannedRoute = []; // Clear route
       showLoader(true);
       statusEl.textContent = 'Loading hospital lobby...';
       
-      // Wait for scene to be ready before navigating
       waitForSceneReady(function() {
         goToNode('lobby');
       });
     });
-    
-    document.getElementById('targetSelect').addEventListener('change', function(e) {
-      const addBtn = document.getElementById('btn-add-hotspot');
-      addBtn.disabled = !e.target.value;
-    });
-    
-    // Expose removeHotspot to global scope for inline onclick
-    window.appRemoveHotspot = removeHotspot;
-    
-    console.log('Event listeners attached');
 
     function setSceneReady(value) {
-  window.sceneReady = !!value;
-
-  // Hide the "loading in background" indicator if it exists
-  const loadingIndicator = document.getElementById('sceneLoadingIndicator');
-  if (loadingIndicator) {
-    loadingIndicator.classList.toggle('show', !window.sceneReady);
-  }
-}
-
-function hideRouteModalIfOpen() {
-  const modal = document.getElementById('routeModal');
-  if (modal) modal.classList.remove('show');
-}
-
+      window.sceneReady = !!value;
+      const loadingIndicator = document.getElementById('sceneLoadingIndicator');
+      if (loadingIndicator) {
+        loadingIndicator.classList.toggle('show', !window.sceneReady);
+      }
+    }
     
-    // Wait for A-Frame scene to be ready (in background)
     const scene = document.querySelector('a-scene');
 
-const startApp = () => {
-  console.log('Scene loaded in background!');
+    const startApp = () => {
+      sky = document.querySelector('#sky');
+      hotspotsContainer = document.querySelector('#hotspots');
+      pathLinesContainer = document.querySelector('#pathlines');
+      
+      setSceneReady(true);
+      showLoader(false);
+    };
 
-  // Re-query AFTER A-Frame initializes (important)
-  sky = document.querySelector('#sky');
-  hotspotsContainer = document.querySelector('#hotspots');
-  signsContainer = document.querySelector('#signs');
-  pathLinesContainer = document.querySelector('#pathlines'); // IMPORTANT (you missed this before)
-
-  // Mark as ready + hide "loading in background"
-  setSceneReady(true);
-
-  // Also hide the big overlay loader if it's showing
-  showLoader(false);
-
-  console.log('Scene is now ready for navigation');
-};
-
-// Bind reliably
-if (scene.hasLoaded) {
-  startApp();
-} else {
-  scene.addEventListener('loaded', startApp, { once: true });
-
-  // Fallback: if for some reason "loaded" doesn't fire, don't get stuck forever
-  setTimeout(() => {
-    if (!window.sceneReady) {
-      console.warn('Scene load event not detected. Forcing sceneReady=true (fallback).');
+    if (scene.hasLoaded) {
       startApp();
+    } else {
+      scene.addEventListener('loaded', startApp, { once: true });
+      setTimeout(() => {
+        if (!window.sceneReady) {
+          startApp();
+        }
+      }, 4000);
     }
-  }, 4000);
-}
   }
 
-  // Helper function to wait for scene to be ready
   function waitForSceneReady(callback) {
     if (window.sceneReady) {
       callback();
     } else {
-      console.log('Waiting for scene to finish loading...');
       const checkInterval = setInterval(function() {
         if (window.sceneReady) {
           clearInterval(checkInterval);
@@ -1964,14 +1440,11 @@ if (scene.hasLoaded) {
     }
   }
 
-  // Start when DOM is ready
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
-
-  console.log('Script loaded successfully');
 })();
 </script>
 </body>
