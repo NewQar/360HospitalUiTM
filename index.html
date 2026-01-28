@@ -398,7 +398,7 @@
         id="camera"
         camera="fov: 80"
         wasd-controls="enabled: false"
-        touch-look-zoom="minPitch:-85; maxPitch:85; dragSpeed:0.18; minFov:30; maxFov:110; zoomSpeed:0.18">
+        touch-look-zoom="minPitch:-85; maxPitch:85; dragSpeed:0.18; minFov:30; maxFov:130; zoomSpeed:0.18">
         <a-entity
           id="cursor"
           cursor="rayOrigin: mouse; fuse: false"
@@ -426,7 +426,7 @@ AFRAME.registerComponent('touch-look-zoom', {
     maxPitch:  { type: 'number', default: 85 },
     dragSpeed: { type: 'number', default: 0.18 },
     minFov:    { type: 'number', default: 30 },
-    maxFov:    { type: 'number', default: 110 },
+    maxFov:    { type: 'number', default: 130 },
     zoomSpeed: { type: 'number', default: 0.18 }
   },
 
@@ -555,8 +555,8 @@ AFRAME.registerComponent('touch-look-zoom', {
     if (!sky) return;
     
     // Apply blur when FOV > 90 (zoomed out)
-    if (fov > 90) {
-      const blurAmount = ((fov - 90) / 20) * 3; // 0 to 3px blur
+    if (fov > 120) {
+      const blurAmount = ((fov - 120) / 20) * 1; // 0 to 3px blur
       sky.setAttribute('material', 'shader', 'flat');
       sky.object3D.traverse((node) => {
         if (node.material && node.material.map) {
