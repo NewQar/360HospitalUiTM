@@ -289,8 +289,8 @@
         <svg class="map-svg" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid meet">
           <rect x="0" y="0" width="200" height="150" rx="6" ry="6" fill="#0e1b2a"/>
           <g id="nodesSvg"></g>
-          <path d="M20 30 L150 30" stroke="#243b57" stroke-width="6" stroke-linecap="round" />
-          <path d="M20 65 L150 65" stroke="#243b57" stroke-width="6" stroke-linecap="round" />
+          <!-- <path d="M20 30 L150 30" stroke="#243b57" stroke-width="6" stroke-linecap="round" />
+          <path d="M20 65 L150 65" stroke="#243b57" stroke-width="6" stroke-linecap="round" /> -->
         </svg>
       </div>
       <div class="map-legend"><strong>Legend:</strong> ● Current · Click signs/hotspots to move</div>
@@ -305,7 +305,7 @@
   <!-- Route Selector Modal -->
   <div class="route-modal" id="routeModal">
     <div class="route-modal-content">
-      <h2>🏥 Navigate Hospital Al-Sultan Abdullah v12</h2>
+      <h2>🏥 Navigate Hospital Al-Sultan Abdullah v3</h2>
       <p>Select your starting point and destination to begin your journey</p>
       
       <div class="route-modal-body">
@@ -410,7 +410,7 @@
       </a-entity>
     </a-entity>
 
-    <a-sky id="sky" radius="5000" src="#lobby-img-low" rotation="0 0 0"></a-sky>
+    <a-sky id="sky" radius="5000" side='' src="#lobby-img-low" rotation="0 0 0"></a-sky>
     <a-entity id="pathlines"></a-entity>
     <a-entity id="hotspots"></a-entity>
   </a-scene>
@@ -656,31 +656,18 @@ AFRAME.registerComponent('dashed-line', {
   const nodes = {
     "lobby": {
       id: "lobby",
-      title: "Lobby",
+      title: "Main Lobby",
       type: "image",
       srcLow: "#lobby-img-low",
       srcHd:  "1-0Lobby.jpg",
       mapPos: {x: 15, y: 140},
       isDestination: true,
       neighbors: [
-        {id: "Receptionist", yaw: 90, pitch: 10, jauh: 5.5},
         {id: "Kaunter Bayaran", yaw: 45, pitch: 12, jauh: 6},
         {id: "1-2", yaw: 0, pitch: 15, jauh: 6}
       ]
     },
-    "Receptionist": {
-      id: "Receptionist",
-      title: "Receptionist",
-      type: "image",
-      srcLow: "#Recep-img-low",
-      srcHd:  "test2.jpg",
-      mapPos: {x: 50, y: 140},
-      isDestination: true,
-      neighbors: [
-        {id: "lobby", yaw: -1, pitch: 0, jauh: 5.3},
-        {id: "Kaunter Bayaran", yaw: 130, pitch: 10, jauh: 5.5}
-      ]
-    },
+
     "Kaunter Bayaran": {
       id: "Kaunter Bayaran",
       title: "Kaunter Bayaran",
@@ -690,7 +677,6 @@ AFRAME.registerComponent('dashed-line', {
       mapPos: {x: 50, y: 120},
       isDestination: true,
       neighbors: [
-        {id: "Receptionist", yaw: 108, pitch: 10, jauh: 5.5},
         {id: "lobby", yaw: 155, pitch: 12.5, jauh: 5.5}
       ]
     },
@@ -749,7 +735,7 @@ AFRAME.registerComponent('dashed-line', {
     },
     "Farmasi": {
       id: "Farmasi",
-      title: "Pharmacy",
+      title: "Shop",
       type: "image",
       srcLow: "#Farmasi-img-low",
       srcHd:  "2-0Farmasi.jpg",
@@ -788,7 +774,7 @@ AFRAME.registerComponent('dashed-line', {
     },
     "3-0": {
       id: "3-0",
-      title: "Ortho",
+      title: "Orthopedic & Surgical Clinic",
       type: "image",
       srcLow: "#3-0-img-low",
       srcHd:  "3-0Ortho.jpg",
@@ -814,7 +800,7 @@ AFRAME.registerComponent('dashed-line', {
     },
     "4-0": {
       id: "4-0",
-      title: "Ofta",
+      title: "ENT & Ophthalmology Clinic",
       type: "image",
       srcLow: "#4-0-img-low",
       srcHd:  "4-0Ofta.jpg",
@@ -827,12 +813,12 @@ AFRAME.registerComponent('dashed-line', {
     },
     "5-0": {
       id: "5-0",
-      title: "Darah",
+      title: "5-0",
       type: "image",
       srcLow: "#5-0-img-low",
       srcHd:  "5-0Darah.jpg",
       mapPos: {x: 160, y: 50},
-      isDestination: true,
+      isDestination: false,
       neighbors: [
         {id: "4-0", yaw: 178, pitch: 14, jauh: 5.5},
         {id: "5-1", yaw: 360.8, pitch: 12, jauh: 5.0}
@@ -906,19 +892,19 @@ AFRAME.registerComponent('dashed-line', {
     },
     "6-0": {
       id: "6-0",
-      title: "Medical Clinic",
+      title: "6-0",
       type: "image",
       srcLow: "#6-0-img-low",
       srcHd:  "6-0Ubat.jpg",
       mapPos: {x: 160, y: 120},
-      isDestination: true,
+      isDestination: false,
       neighbors: [
         {id: "5-2", yaw: 179, pitch: 15, jauh: 5.5}
       ]
     },
     "6A-0": {
       id: "6A-0",
-      title: "Pharmacy 2",
+      title: "Outpatient Pharmacy",
       type: "image",
       srcLow: "#6A-0-img-low",
       srcHd:  "6A-0FarmasiPakar.jpg",
