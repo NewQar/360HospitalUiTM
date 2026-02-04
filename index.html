@@ -288,9 +288,8 @@
       <div class="mini-map" id="miniMap">
         <svg class="map-svg" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid meet">
           <rect x="0" y="0" width="200" height="150" rx="6" ry="6" fill="#0e1b2a"/>
+          <g id="miniMapRouteLines"></g>
           <g id="nodesSvg"></g>
-          <!-- <path d="M20 30 L150 30" stroke="#243b57" stroke-width="6" stroke-linecap="round" />
-          <path d="M20 65 L150 65" stroke="#243b57" stroke-width="6" stroke-linecap="round" /> -->
         </svg>
       </div>
       <div class="map-legend"><strong>Legend:</strong> ● Current · Click signs/hotspots to move</div>
@@ -917,7 +916,7 @@ AFRAME.registerComponent('dashed-line', {
     }
   };
 
-  let sky, hotspotsContainer, pathLinesContainer, loader, statusEl, locationLabel, miniMapGroup;
+  let sky, hotspotsContainer, pathLinesContainer, loader, statusEl, locationLabel, miniMapGroup, miniMapRouteLines;
   let currentNodeId = null;
   let isTransitioning = false;
   let plannedRoute = [];
@@ -939,58 +938,58 @@ AFRAME.registerComponent('dashed-line', {
   }
 
   function setSkyWithProgressive(lowSrcSelector, hdUrl) {
-  // Show low immediately
-  sky.setAttribute('src', lowSrcSelector);
-  
-  // Remove vignette effect
-  sky.setAttribute('material', {
-    shader: 'flat',
-    color: '#ffffff',
-    fog: false,
-    side: 'double'
-  });
-  
-  if (!hdUrl) return;
+    // Show low immediately
+    sky.setAttribute('src', lowSrcSelector);
+    
+    // Remove vignette effect
+    sky.setAttribute('material', {
+      shader: 'flat',
+      color: '#ffffff',
+      fog: false,
+      side: 'double'
+    });
+    
+    if (!hdUrl) return;
 
-  const cached = hdCache.get(hdUrl);
-  if (cached && cached.complete) {
-    sky.setAttribute('src', hdUrl);
-    
-    // Reapply material after HD loads
-    setTimeout(() => {
-      sky.setAttribute('material', {
-        shader: 'flat',
-        color: '#ffffff',
-        fog: false,
-        side: 'double'
-      });
-    }, 100);
-    
-    return;
+    const cached = hdCache.get(hdUrl);
+    if (cached && cached.complete) {
+      sky.setAttribute('src', hdUrl);
+      
+      // Reapply material after HD loads
+      setTimeout(() => {
+        sky.setAttribute('material', {
+          shader: 'flat',
+          color: '#ffffff',
+          fog: false,
+          side: 'double'
+        });
+      }, 100);
+      
+      return;
+    }
+
+    const img = cached || new Image();
+    img.crossOrigin = "anonymous";
+    img.decoding = "async";
+    img.loading = "eager";
+    img.src = hdUrl;
+    hdCache.set(hdUrl, img);
+
+    img.addEventListener('load', function onLoad() {
+      img.removeEventListener('load', onLoad);
+      sky.setAttribute('src', hdUrl);
+      
+      // Reapply material after HD loads
+      setTimeout(() => {
+        sky.setAttribute('material', {
+          shader: 'flat',
+          color: '#ffffff',
+          fog: false,
+          side: 'double'
+        });
+      }, 100);
+    });
   }
-
-  const img = cached || new Image();
-  img.crossOrigin = "anonymous";
-  img.decoding = "async";
-  img.loading = "eager";
-  img.src = hdUrl;
-  hdCache.set(hdUrl, img);
-
-  img.addEventListener('load', function onLoad() {
-    img.removeEventListener('load', onLoad);
-    sky.setAttribute('src', hdUrl);
-    
-    // Reapply material after HD loads
-    setTimeout(() => {
-      sky.setAttribute('material', {
-        shader: 'flat',
-        color: '#ffffff',
-        fog: false,
-        side: 'double'
-      });
-    }, 100);
-  });
-}
 
   function buildMiniMap() {
     miniMapGroup.innerHTML = '';
@@ -1028,6 +1027,96 @@ AFRAME.registerComponent('dashed-line', {
       c.setAttribute('fill', isActive ? '#0b74de' : '#94a3b8');
       c.setAttribute('r', isActive ? 8 : 6);
     });
+  }
+
+  // NEW: Update minimap to show route lines and animation
+  function updateMiniMapRoute() {
+    miniMapRouteLines.innerHTML = '';
+    
+    if (plannedRoute.length < 2) return;
+    
+    // Draw route lines
+    for (let i = 0; i < plannedRoute.length - 1; i++) {
+      const fromNode = nodes[plannedRoute[i]];
+      const toNode = nodes[plannedRoute[i + 1]];
+      
+      if (fromNode && toNode) {
+        const x1 = fromNode.mapPos.x;
+        const y1 = fromNode.mapPos.y;
+        const x2 = toNode.mapPos.x;
+        const y2 = toNode.mapPos.y;
+        
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', '#fbbf24');
+        line.setAttribute('stroke-width', 2.5);
+        line.setAttribute('stroke-linecap', 'round');
+        line.setAttribute('opacity', '0.8');
+        miniMapRouteLines.appendChild(line);
+      }
+    }
+    
+    // Add animated dot
+    const animDot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    animDot.setAttribute('r', 3);
+    animDot.setAttribute('fill', '#fbbf24');
+    
+    // Build path for animation
+    let pathD = '';
+    for (let i = 0; i < plannedRoute.length; i++) {
+      const node = nodes[plannedRoute[i]];
+      if (node) {
+        const x = node.mapPos.x;
+        const y = node.mapPos.y;
+        pathD += (i === 0 ? 'M' : 'L') + x + ',' + y;
+      }
+    }
+    
+    const animPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    animPath.setAttribute('id', 'miniMapAnimPath');
+    animPath.setAttribute('d', pathD);
+    animPath.setAttribute('fill', 'none');
+    miniMapRouteLines.appendChild(animPath);
+    
+    const animateMotion = document.createElementNS("http://www.w3.org/2000/svg", "animateMotion");
+    animateMotion.setAttribute('dur', '3s');
+    animateMotion.setAttribute('repeatCount', 'indefinite');
+    
+    const mpath = document.createElementNS("http://www.w3.org/1999/xlink", "mpath");
+    mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#miniMapAnimPath');
+    
+    animateMotion.appendChild(mpath);
+    animDot.appendChild(animateMotion);
+    miniMapRouteLines.appendChild(animDot);
+    
+    // Add start and end markers on top of route lines
+    const startNode = nodes[plannedRoute[0]];
+    const endNode = nodes[plannedRoute[plannedRoute.length - 1]];
+    
+    if (startNode) {
+      const startCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      startCircle.setAttribute('cx', startNode.mapPos.x);
+      startCircle.setAttribute('cy', startNode.mapPos.y);
+      startCircle.setAttribute('r', 5);
+      startCircle.setAttribute('fill', '#10b981');
+      startCircle.setAttribute('stroke', '#fff');
+      startCircle.setAttribute('stroke-width', 1.5);
+      miniMapRouteLines.appendChild(startCircle);
+    }
+    
+    if (endNode) {
+      const endCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      endCircle.setAttribute('cx', endNode.mapPos.x);
+      endCircle.setAttribute('cy', endNode.mapPos.y);
+      endCircle.setAttribute('r', 5);
+      endCircle.setAttribute('fill', '#0b74de');
+      endCircle.setAttribute('stroke', '#fff');
+      endCircle.setAttribute('stroke-width', 1.5);
+      miniMapRouteLines.appendChild(endCircle);
+    }
   }
 
   function createNavigationForNode(node){
@@ -1316,7 +1405,7 @@ AFRAME.registerComponent('dashed-line', {
       animateMotion.setAttribute('dur', '3s');
       animateMotion.setAttribute('repeatCount', 'indefinite');
       
-      const mpath = document.createElementNS("http://www.w3.org/2000/svg", "mpath");
+      const mpath = document.createElementNS("http://www.w3.org/1999/xlink", "mpath");
       mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '#routeAnimPath');
       
       animateMotion.appendChild(mpath);
@@ -1379,6 +1468,7 @@ AFRAME.registerComponent('dashed-line', {
     statusEl = document.getElementById('status');
     locationLabel = document.getElementById('locationLabel');
     miniMapGroup = document.querySelector('#nodesSvg');
+    miniMapRouteLines = document.querySelector('#miniMapRouteLines');
     routeMapNodes = document.querySelector('#routeMapNodes');
     routeMapLines = document.querySelector('#routeMapLines');
     
@@ -1397,6 +1487,9 @@ AFRAME.registerComponent('dashed-line', {
         showLoader(true);
         statusEl.textContent = 'Starting route navigation...';
         
+        // Update minimap with route visualization
+        updateMiniMapRoute();
+        
         waitForSceneReady(function() {
           goToNode(plannedRoute[0]);
         });
@@ -1406,6 +1499,7 @@ AFRAME.registerComponent('dashed-line', {
     document.getElementById('btn-skip-route').addEventListener('click', function() {
       hideRouteModal();
       plannedRoute = []; // Clear route
+      miniMapRouteLines.innerHTML = ''; // Clear minimap route
       showLoader(true);
       statusEl.textContent = 'Loading hospital lobby...';
       
